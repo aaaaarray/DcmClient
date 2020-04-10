@@ -9,18 +9,19 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QStyle>
-
+#include <Windows.h>
 #include "IniEx.h"
 #include "DirFileEx.h"
+
 DcmClient::DcmClient(QWidget *parent)
 	: QWidget(parent)
 {
 	//setStyleSheet(" color:white; ");
-
+	m_WatcherFileThread = NULL;
 	setWindowTitle(LoadLanguageString("menu", "title"));
-	setFixedSize(500, 260);
-	move((QApplication::desktop()->width() - QApplication::desktop()->width()) / 2, (QApplication::desktop()->height() - QApplication::desktop()->height()) / 2);
-	QWidget *widget = new QWidget;
+	setFixedSize(500, 400);
+	//move((QApplication::desktop()->width() - QApplication::desktop()->width()) / 2, (QApplication::desktop()->height() - QApplication::desktop()->height()) / 2);
+	//QWidget *widget = new QWidget;
 	//setCentralWidget(widget);
 	setWindowFlags((windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMinimizeButtonHint);
 	setWindowFlags(Qt::Tool);
@@ -55,6 +56,17 @@ DcmClient::DcmClient(QWidget *parent)
 	connect(action_quit, SIGNAL(triggered()), qApp, SLOT(quit()));
 	settingWidget = new SettingWidget();
 	settingWidget->hide();
+
+
+
+	m_listFileWidget = new QListWidget(this);
+	m_listFileWidget->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+	m_listFileWidget->setGeometry(geometry());
+	m_listFileWidget->setStyleSheet("QListWidget{outline:0px;}"
+		"QListWidget::Item{background:white; }"
+		"QListWidget::Item:hover{background:white; }"
+		"QListWidget::item:selected{background:white; }");
+	setFileSystemWatcher();
 }
 
 void DcmClient::closeEvent(QCloseEvent *event)
@@ -101,4 +113,32 @@ void DcmClient::about()
 
 void DcmClient::init(){
 	
+}
+
+void DcmClient::setFileSystemWatcher()
+{
+	QString orgId = ReadIniString("client", "orgId", Ex_GetRoamingDir() + "config.ini");
+	QString orgName = ReadIniString("client", "orgName", Ex_GetRoamingDir() + "config.ini");
+	QString clientId = ReadIniString("client", "clientId", Ex_GetRoamingDir() + "config.ini");
+	QString dataDir = ReadIniString("client", "dataDir", Ex_GetRoamingDir() + "config.ini");
+	if (orgId == "" || orgName == "" || clientId == "" || clientId == ""){
+		return;
+	}
+
+	if (m_WatcherFileThread != NULL){
+		delete m_WatcherFileThread;
+		m_WatcherFileThread = NULL;
+	}
+	m_WatcherFileThread = new WatcherFileThread(this);
+	m_WatcherFileThread->setWatchDir(dataDir);
+	m_WatcherFileThread->start();
+}
+
+void DcmClient::fileChanged(QString path){
+	qDebug() << __FUNCTION__ << "fileChanged path = " << path;
+}
+
+void DcmClient::dirChanged(QString path)
+{
+	qDebug() << __FUNCTION__ << "directoryChanged path = " << path;
 }

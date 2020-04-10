@@ -42,6 +42,12 @@
     <ClCompile Include="UploadFileThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FileItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WatcherFileThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="DcmClient.h">
@@ -51,6 +57,12 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="UploadFileThread.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="FileItem.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="WatcherFileThread.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
