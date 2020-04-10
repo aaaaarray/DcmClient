@@ -11,12 +11,13 @@
 #include <QStyle>
 
 #include "IniEx.h"
+#include "DirFileEx.h"
 DcmClient::DcmClient(QWidget *parent)
 	: QWidget(parent)
 {
 	//setStyleSheet(" color:white; ");
 
-	setWindowTitle(LoadLanguageString("text", "title"));
+	setWindowTitle(LoadLanguageString("menu", "title"));
 	setFixedSize(500, 260);
 	move((QApplication::desktop()->width() - QApplication::desktop()->width()) / 2, (QApplication::desktop()->height() - QApplication::desktop()->height()) / 2);
 	QWidget *widget = new QWidget;
@@ -25,20 +26,20 @@ DcmClient::DcmClient(QWidget *parent)
 	setWindowFlags(Qt::Tool);
 
 	systray = new QSystemTrayIcon(this);
-	systray->setToolTip(LoadLanguageString("text", "title"));
+	systray->setToolTip(LoadLanguageString("menu", "title"));
 	systray->setIcon(QIcon("icon.png"));
 	systray->setVisible(true);
 	QMenu *traymenu = new QMenu(this);
-	action_detils = new QAction(LoadLanguageString("text", "detils"), traymenu);
+	action_detils = new QAction(LoadLanguageString("menu", "detils"), traymenu);
 	QIcon icon = QApplication::style()->standardIcon(QStyle::SP_ComputerIcon);
 	action_detils->setIcon(icon);
-	action_setting = new QAction(LoadLanguageString("text", "setting"), traymenu);
+	action_setting = new QAction(LoadLanguageString("menu", "setting"), traymenu);
 	icon = QApplication::style()->standardIcon(QStyle::SP_DriveNetIcon);
 	action_setting->setIcon(icon);
-	action_about = new QAction(LoadLanguageString("text", "about"), traymenu);
+	action_about = new QAction(LoadLanguageString("menu", "about"), traymenu);
 	icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation);
 	action_about->setIcon(icon);
-	action_quit = new QAction(LoadLanguageString("text", "quit"), traymenu);
+	action_quit = new QAction(LoadLanguageString("menu", "quit"), traymenu);
 	icon = QApplication::style()->standardIcon(QStyle::SP_DialogCloseButton);
 	action_quit->setIcon(icon);
 	traymenu->addAction(action_detils);
@@ -52,6 +53,8 @@ DcmClient::DcmClient(QWidget *parent)
 	connect(action_setting, SIGNAL(triggered(bool)), this, SLOT(showSetting()));
 	connect(action_about, SIGNAL(triggered(bool)), this, SLOT(about()));
 	connect(action_quit, SIGNAL(triggered()), qApp, SLOT(quit()));
+	settingWidget = new SettingWidget();
+	settingWidget->hide();
 }
 
 void DcmClient::closeEvent(QCloseEvent *event)
@@ -85,7 +88,7 @@ void DcmClient::showDetils()
 }
 void DcmClient::showSetting()
 {
-
+	settingWidget->show();
 }
 void DcmClient::about()
 {
@@ -94,4 +97,8 @@ void DcmClient::about()
 	mb.exec();
 	//QMessageBox::information(this, "Title", "Content");
 
+}
+
+void DcmClient::init(){
+	
 }

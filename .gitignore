@@ -4,3 +4,8 @@ obj
 *.pdb
 *.sdf
 GeneratedFiles
+*.opensdf
+*.v12.suo
+lib
+bin/Debug
+*.dll
