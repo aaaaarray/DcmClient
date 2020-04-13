@@ -16,13 +16,12 @@
 DcmClient::DcmClient(QWidget *parent)
 	: QWidget(parent)
 {
+	//this->hide();
 	//setStyleSheet(" color:white; ");
 	m_WatcherFileThread = NULL;
 	setWindowTitle(LoadLanguageString("menu", "title"));
-	setFixedSize(500, 400);
+	//setFixedSize(500, 400);
 	//move((QApplication::desktop()->width() - QApplication::desktop()->width()) / 2, (QApplication::desktop()->height() - QApplication::desktop()->height()) / 2);
-	//QWidget *widget = new QWidget;
-	//setCentralWidget(widget);
 	setWindowFlags((windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMinimizeButtonHint);
 	setWindowFlags(Qt::Tool);
 
@@ -54,20 +53,14 @@ DcmClient::DcmClient(QWidget *parent)
 	connect(action_setting, SIGNAL(triggered(bool)), this, SLOT(showSetting()));
 	connect(action_about, SIGNAL(triggered(bool)), this, SLOT(about()));
 	connect(action_quit, SIGNAL(triggered()), qApp, SLOT(quit()));
+
 	settingWidget = new SettingWidget();
 	settingWidget->hide();
-
-
-
-	m_listFileWidget = new QListWidget(this);
-	m_listFileWidget->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-	m_listFileWidget->setGeometry(geometry());
-	m_listFileWidget->setStyleSheet("QListWidget{outline:0px;}"
-		"QListWidget::Item{background:white; }"
-		"QListWidget::Item:hover{background:white; }"
-		"QListWidget::item:selected{background:white; }");
+	downLoadWidget = new DownLoadWidget();
+	downLoadWidget->show();
 	setFileSystemWatcher();
 }
+
 
 void DcmClient::closeEvent(QCloseEvent *event)
 {
@@ -93,10 +86,11 @@ void DcmClient::trayActivated(QSystemTrayIcon::ActivationReason reason)
 
 void DcmClient::showDetils()
 {
-	move((QApplication::desktop()->width() - width()) / 2, (QApplication::desktop()->height() - height()) / 2);
+	/*move((QApplication::desktop()->width() - width()) / 2, (QApplication::desktop()->height() - height()) / 2);
 	show();
 	raise();
-	activateWindow();
+	activateWindow();*/
+	downLoadWidget->show();
 }
 void DcmClient::showSetting()
 {
@@ -130,6 +124,7 @@ void DcmClient::setFileSystemWatcher()
 		m_WatcherFileThread = NULL;
 	}
 	m_WatcherFileThread = new WatcherFileThread(this);
+	connect(m_WatcherFileThread, SIGNAL(toAddFile(QString)), downLoadWidget, SLOT(addFile(QString)));
 	m_WatcherFileThread->setWatchDir(dataDir);
 	m_WatcherFileThread->start();
 }

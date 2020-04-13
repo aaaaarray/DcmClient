@@ -84,17 +84,18 @@ void WatcherFileThread::WatchDirectories(HANDLE hCompPort)
 				{
 				case FILE_ACTION_ADDED:		
 					qDebug() << QString::fromWCharArray(wcFileName) << " add";
+
 					break;
 				case FILE_ACTION_REMOVED:				
 					break;
 				case FILE_ACTION_MODIFIED:
-					qDebug() << "time stamp or attribute changed: ";
+					//qDebug() << "time stamp or attribute changed: ";
 					break;
 				case FILE_ACTION_RENAMED_OLD_NAME:
-					qDebug() << "file name changed - old name: ";
+					//qDebug() << "file name changed - old name: ";
 					break;
 				case FILE_ACTION_RENAMED_NEW_NAME:
-					qDebug() << "file name changed - new name: ";
+					//qDebug() << "file name changed - new name: ";
 					break;
 					default: 
 						qDebug() << "unknown event: ";

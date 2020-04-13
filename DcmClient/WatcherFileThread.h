@@ -10,6 +10,8 @@ public:
 	WatcherFileThread(QObject *parent);
 	~WatcherFileThread();
 	void setWatchDir(QString watchDir);
+signals:
+	void toAddFile(QString);
 protected:
 	virtual void run();
 	QString watchDir;

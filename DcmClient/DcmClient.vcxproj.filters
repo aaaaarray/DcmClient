@@ -48,6 +48,12 @@
     <ClCompile Include="WatcherFileThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DownLoadListWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DownLoadWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="DcmClient.h">
@@ -63,6 +69,12 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="WatcherFileThread.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="DownLoadListWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="DownLoadWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
