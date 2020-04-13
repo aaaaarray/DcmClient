@@ -5,8 +5,8 @@ DownLoadWidget::DownLoadWidget(QWidget *parent)
 	: QWidget(parent)
 {
 	setWindowTitle(LoadLanguageString("download", "title"));
-	setFixedSize(1000, 600);
-	QRect rc = geometry();
+	setFixedSize(800, 600);
+
 	pushbuttonDownLoading = new QPushButton(this);
 	pushbuttonDownLoaded = new QPushButton(this);
 	connect(pushbuttonDownLoading, SIGNAL(pressed()), this, SLOT(donwLoading()));
@@ -18,10 +18,9 @@ DownLoadWidget::DownLoadWidget(QWidget *parent)
 
 	m_DownLoadingListWidget = new DownLoadListWidget(this, DOWNLOADING);
 	m_DownLoadedListWidget = new DownLoadListWidget(this, DOWNLOADED);
-	m_DownLoadingListWidget->setGeometry(100, 30, 800, 570);
-	m_DownLoadedListWidget->setGeometry(100, 30, 800, 570);
-	rc = m_DownLoadingListWidget->geometry();
-	rc = m_DownLoadedListWidget->geometry();
+	m_DownLoadingListWidget->setGeometry(0, 30, 800, 570);
+	m_DownLoadedListWidget->setGeometry(0, 30, 800, 570);
+
 	showDownloading(true);
 }
 

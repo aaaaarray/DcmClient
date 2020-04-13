@@ -1,5 +1,5 @@
 ﻿#include "WatcherFileThread.h"
-
+#include <QDir.h>
 #include <QDebug.h>
 #define BUFFER_SIZE 2048
 
@@ -32,6 +32,7 @@ void WatcherFileThread::setWatchDir(QString watchDir){
 }
 void WatcherFileThread::run()
 {
+	listFile(watchDir);
 	HANDLE  hCompPort = NULL;                 // Handle To a Completion Port
 
 	// Get a handle to the directory
@@ -84,7 +85,7 @@ void WatcherFileThread::WatchDirectories(HANDLE hCompPort)
 				{
 				case FILE_ACTION_ADDED:		
 					qDebug() << QString::fromWCharArray(wcFileName) << " add";
-
+					emit(toAddFile(watchDir + QString::fromWCharArray(wcFileName)));
 					break;
 				case FILE_ACTION_REMOVED:				
 					break;
@@ -110,4 +111,25 @@ void WatcherFileThread::WatchDirectories(HANDLE hCompPort)
 	PostQueuedCompletionStatus(hCompPort, 0, 0, NULL);
 }
 
-
+void WatcherFileThread::listFile(QString path)
+{
+	QDir d(path);
+	d.setFilter(QDir::Files | QDir::NoSymLinks | QDir::AllDirs);
+	d.setSorting(QDir::Size | QDir::Reversed);
+	QFileInfoList list = d.entryInfoList();
+	while (!list.isEmpty()){
+		QFileInfo tem = list.last();
+		if (!tem.isDir()){
+			emit(toAddFile(tem.filePath()));
+			list.removeLast();
+		}
+		else if (tem.fileName() != "." && tem.fileName() != ".."){
+			QDir a(tem.filePath());
+			list.removeLast();
+			list.append(a.entryInfoList());
+		}
+		else{
+			list.removeLast();
+		}
+	}
+}

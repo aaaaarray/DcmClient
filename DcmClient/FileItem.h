@@ -18,7 +18,8 @@ public:
 	FileItem(QWidget *parent,QString file, DOWNLOADSTATUS status);
 	~FileItem();
 
-
+protected:
+	virtual void paintEvent(QPaintEvent *event);
 private:
 	QLabel *m_typeLabel;//文件格式缩略图
 	QLabel *m_fileNameLabel;//文件名
@@ -27,4 +28,5 @@ private:
 	QLabel *m_progressLabel;//显示进度状态
 	QLabel *m_statusLabel;//显示状态或者上传速度
 	QProgressBar *m_progressBar;//上传进度条	
+
 };

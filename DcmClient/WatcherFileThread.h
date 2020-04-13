@@ -18,4 +18,5 @@ protected:
 private:
 	void WatchDirectories(HANDLE hCompPort);
 	void StartWatcher(const TCHAR* szDirName);
+	void listFile(QString path);
 };

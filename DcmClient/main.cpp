@@ -1,4 +1,4 @@
-#include "DcmClient.h"
+﻿#include "DcmClient.h"
 #include "SettingWidget.h"
 #include "DownLoadWidget.h"
 #include <QtWidgets/QApplication>
@@ -9,6 +9,7 @@ int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
 	a.setQuitOnLastWindowClosed(false);
+	g_strResPath = GetRunDir() + "res/default/";//初始化资源路径
 	m_gRunConfig = GetRunDir() + "res/setting.ini";
 	DcmClient *window = new DcmClient;
 	//window->show();
