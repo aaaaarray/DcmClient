@@ -9,3 +9,6 @@ GeneratedFiles
 lib
 bin/Debug
 *.dll
+Debug
+packages
+packages.config

@@ -3,9 +3,13 @@
 #include "DirFileEx.h"
 #include "def.h"
 #include <Windows.h>
+#include <QPainter.h>
+#include <QDebug>
+#include "HttpRequestModel.h"
 FileItem::FileItem(QWidget *parent,QString file, DOWNLOADSTATUS status)
 	: QWidget(parent)
 {
+	filePath = file;
 	QPalette palette(this->palette());
 	palette.setColor(QPalette::Background, Qt::white);
 	setAutoFillBackground(true);
@@ -51,7 +55,7 @@ FileItem::~FileItem()
 {
 }
 
-#include <QPainter.h>
+
 void FileItem::paintEvent(QPaintEvent *event)
 {
 	Q_UNUSED(event);
@@ -67,4 +71,18 @@ void FileItem::paintEvent(QPaintEvent *event)
 	//pen.setWidth(1);
 	painter.setPen(pen);
 	painter.drawLine(80, 1, 80, 80);
+
+
 }
+
+
+
+void FileItem::upload()
+{
+	HttpRequestModel *m_httpRequestModel = HttpRequestModel::getHttpRequestModel();
+	if (!m_httpRequestModel->uploadFile(filePath)){
+
+	}
+
+}
+

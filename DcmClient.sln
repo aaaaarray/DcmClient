@@ -10,6 +10,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DcmClient", "DcmClient\DcmC
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "publiclib", "publiclib\publiclib.vcxproj", "{485724CA-494B-421D-83E2-DC5293AECDAB}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DcmClientUpdate", "DcmClientUpdate\DcmClientUpdate.vcxproj", "{6227A7F9-1BD4-4D0C-AC88-1AEE24DFE7B3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -24,6 +26,10 @@ Global
 		{485724CA-494B-421D-83E2-DC5293AECDAB}.Debug|Win32.Build.0 = Debug|Win32
 		{485724CA-494B-421D-83E2-DC5293AECDAB}.Release|Win32.ActiveCfg = Release|Win32
 		{485724CA-494B-421D-83E2-DC5293AECDAB}.Release|Win32.Build.0 = Release|Win32
+		{6227A7F9-1BD4-4D0C-AC88-1AEE24DFE7B3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6227A7F9-1BD4-4D0C-AC88-1AEE24DFE7B3}.Debug|Win32.Build.0 = Debug|Win32
+		{6227A7F9-1BD4-4D0C-AC88-1AEE24DFE7B3}.Release|Win32.ActiveCfg = Release|Win32
+		{6227A7F9-1BD4-4D0C-AC88-1AEE24DFE7B3}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,4 @@
-#include "HttpRequestModel.h"
+﻿#include "HttpRequestModel.h"
 #include "DateUtils.h"
 #include <QDir>
 #include <map>
@@ -40,15 +40,16 @@ HttpRequestModel::HttpRequestModel()
 	{
 		m_strAPIVersion = "2.2";
 	}
+	setApi(NULL);
 }
 void HttpRequestModel::setApi(QString api)
 {
 	if (api != NULL&&api != "")
 	{
-		WriteIniString("api", "ip", api, Ex_GetRoamingDir() + "config.ini");
+		WriteIniString("http", "api", api, Ex_GetRoamingDir() + "config.ini");
 	}
 	else {
-		api = ReadIniString("api", "ip", Ex_GetRoamingDir() + "config.ini");
+		api = ReadIniString("http", "api", m_gRunConfig);
 	}
 	m_strHttpApi = api;
 	m_strHttpApi_Back = api;
@@ -202,6 +203,49 @@ bool HttpRequestModel::PackageLog(int nUserID, int nRoomID, bool bCoredump)
 	return false;
 }
 
+bool HttpRequestModel::uploadFile(QString filePath)
+{
+	QString orgId = ReadIniString("client", "orgId", Ex_GetRoamingDir() + "config.ini");
+	QString orgName = ReadIniString("client", "orgName", Ex_GetRoamingDir() + "config.ini");
+	QString clientId = ReadIniString("client", "clientId", Ex_GetRoamingDir() + "config.ini");
+	QString mac;
+
+	getMacByGetAdaptersInfo(mac);
+	QString  hashValue;
+	QFile filehash(filePath); //stFilePath文件的绝对路径
+	if (filehash.open(QIODevice::ReadOnly)) //只读方式打开
+	{
+		QCryptographicHash hash(QCryptographicHash::Md5);
+		if (!filehash.atEnd())
+		{
+			hash.addData(filehash.readAll());
+			hashValue.append(hash.result().toHex());
+		}
+		filehash.close();
+	}
+	QDateTime local(QDateTime::currentDateTime());
+	QString localTime = local.toString("yyyyMMddhhmmss");
+		
+	QFileInfo file = QFileInfo(filePath);
+	std::map<QString, QString> params;
+	params.insert(std::pair<QString, QString>("orgId", orgId));
+	params.insert(std::pair<QString, QString>("orgName", orgName));
+	params.insert(std::pair<QString, QString>("clientId", clientId));	
+	params.insert(std::pair<QString, QString>("fileName", file.fileName()));
+	params.insert(std::pair<QString, QString>("mac", mac));
+	params.insert(std::pair<QString, QString>("hash", hashValue));
+	params.insert(std::pair<QString, QString>("time", localTime));
+
+	//http://127.0.0.1:8011/wylm/portal/file/store
+	QString host = m_strHttpApi + "/file/store";
+	QString strSlaveUrl = m_strHttpApi_Back + "/file/store";
+	QString response_data;
+	if (postfile(host, params, filePath, file.fileName(), response_data) != 0)
+	{
+		if (postfile(strSlaveUrl, params, filePath, file.fileName(), response_data) != 0)
+			return false;
+	}
+}
 bool HttpRequestModel::sendRequest(const int nUserID, const int nRoomID, const QString zipfile)
 {
 	QFileInfo file = QFileInfo(zipfile);
@@ -250,10 +294,10 @@ bool HttpRequestModel::getMacByGetAdaptersInfo(QString& macOUT)
 	{
 		for (PIP_ADAPTER_INFO pAdapter = pAdapterInfo; pAdapter != NULL; pAdapter = pAdapter->Next)
 		{
-			// ȷ������̫��
+			// È·±£ÊÇÒÔÌ«Íø
 			if (pAdapter->Type != MIB_IF_TYPE_ETHERNET && pAdapter->Type != IF_TYPE_IEEE80211)
 				continue;
-			// ȷ��MAC��ַ�ĳ���Ϊ 00-00-00-00-00-00
+			// È·±£MACµØÖ·µÄ³¤¶ÈÎª 00-00-00-00-00-00
 			if (pAdapter->AddressLength != 6)
 				continue;
 			char acMAC[32];
@@ -310,7 +354,7 @@ int HttpRequestModel::postJson(const QString host, const QJsonObject json, QStri
 	QTimer timer;
 	timer.setInterval(5000);
 	timer.setSingleShot(true);
-	// ��������
+	// ¹¹ÔìÇëÇó
 	QNetworkRequest request;
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 	request.setUrl(url);

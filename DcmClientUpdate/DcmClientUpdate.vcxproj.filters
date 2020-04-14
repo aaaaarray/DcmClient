@@ -33,57 +33,18 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DcmClient.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SettingWidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UploadFileThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FileItem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WatcherFileThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DownLoadListWidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DownLoadWidget.cpp">
+    <ClCompile Include="DcmClientUpdate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="DcmClient.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="SettingWidget.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="UploadFileThread.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="FileItem.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="WatcherFileThread.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="DownLoadListWidget.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="DownLoadWidget.h">
+    <QtMoc Include="DcmClientUpdate.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <QtRcc Include="DcmClient.qrc">
+    <QtRcc Include="DcmClientUpdate.qrc">
       <Filter>Resource Files</Filter>
     </QtRcc>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
 </Project>

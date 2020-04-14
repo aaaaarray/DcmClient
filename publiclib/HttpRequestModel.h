@@ -21,6 +21,8 @@ public:
 
 
 	bool PackageLog(int nUserID, int nRoomID, bool bCoredump = false);
+
+	bool uploadFile(QString filePath);
 	
 	bool getMacByGetAdaptersInfo(QString& macOUT);
 private:

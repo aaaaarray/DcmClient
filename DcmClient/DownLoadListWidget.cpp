@@ -69,5 +69,6 @@ void DownLoadListWidget::addFile(QString file, DOWNLOADSTATUS status)
 		m_listFileWidget->insertItem(m_listFileWidget->count(), item);
 		m_listFileWidget->setItemWidget(item, fileitem);
 		m_listFileWidget->show();
+		fileitem->upload();
 	}
 }
