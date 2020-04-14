@@ -81,7 +81,7 @@ bool HttpRequestModel::getClientId(QString orgId, QString orgName, QString dataD
 	json.insert("mac", mac);
 
 	QString response_data;
-	int ret = postJsonEx("live/getMediaChannelKey", json, response_data);
+	int ret = postJsonEx("base/init", json, response_data);
 	if (ret != 0)
 	{
 		return false;
@@ -325,7 +325,7 @@ bool HttpRequestModel::getVersion(QString &strVersion, QString& strForcedUpgrade
 	json.insert("VerificationKey", getDateEncrpt());
 
 	QString response_data;
-	int ret = postJsonEx("live/getClientVersion", json, response_data);
+	int ret = postJsonEx("base/getClientVersion", json, response_data);
 	if (ret != 0)
 	{
 		return false;

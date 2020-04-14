@@ -11,6 +11,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "publiclib", "publiclib\publiclib.vcxproj", "{485724CA-494B-421D-83E2-DC5293AECDAB}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DcmClientUpdate", "DcmClientUpdate\DcmClientUpdate.vcxproj", "{6227A7F9-1BD4-4D0C-AC88-1AEE24DFE7B3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{485724CA-494B-421D-83E2-DC5293AECDAB} = {485724CA-494B-421D-83E2-DC5293AECDAB}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
