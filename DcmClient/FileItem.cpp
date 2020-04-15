@@ -5,6 +5,8 @@
 #include <Windows.h>
 #include <QPainter.h>
 #include <QDebug>
+#include <QCryptographicHash>
+#include <QFile>
 #include "HttpRequestModel.h"
 FileItem::FileItem(QWidget *parent,QString file, DOWNLOADSTATUS status)
 	: QWidget(parent)
@@ -79,10 +81,29 @@ void FileItem::paintEvent(QPaintEvent *event)
 
 void FileItem::upload()
 {
+	QFile filehash(filePath);
+	if (filehash.open(QIODevice::ReadOnly))
+	{
+		QCryptographicHash hash(QCryptographicHash::Md5);
+		if (!filehash.atEnd())
+		{
+			hash.addData(filehash.readAll());
+			hashValue.append(hash.result().toHex());
+		}
+		filehash.close();
+	}
 	HttpRequestModel *m_httpRequestModel = HttpRequestModel::getHttpRequestModel();
-	if (!m_httpRequestModel->uploadFile(filePath)){
-
+	if (m_httpRequestModel->uploadFile(filePath, hashValue)){
+		//upload success
+	}
+	else{
+		//upload fail
 	}
 
+}
+
+QString FileItem::getFilehash()
+{
+	return hashValue;
 }
 

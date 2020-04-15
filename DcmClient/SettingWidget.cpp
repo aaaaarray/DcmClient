@@ -11,7 +11,7 @@ SettingWidget::SettingWidget(QWidget *parent)
 	: QWidget(parent)
 {
 	this->setWindowTitle(LoadLanguageString("setting", "title"));
-	setFixedSize(500,400);
+	setFixedSize(500, 400);
 	labelOrgId = new QLabel(this);
 	lineeditOrgId = new QLineEdit(this);
 
@@ -120,45 +120,28 @@ void SettingWidget::onOk()
 	QString orgName = lineeditOrgName->text();
 	QString clientId = lineeditClientId->text();
 	QString dataDir = lineeditBaseDir->text();
+	QString api;
 	HttpRequestModel *m_httpRequestModel = HttpRequestModel::getHttpRequestModel();
-	if (clientId == "")
+
+	if (m_httpRequestModel->InitClient(orgId, orgName, dataDir, clientId, api) == true)
 	{
-		if (m_httpRequestModel->getClientId(orgId, orgName, dataDir, clientId) == true && clientId != "")
-		{
-			WriteIniString("client", "orgId", orgId, Ex_GetRoamingDir() + "config.ini");
-			WriteIniString("client", "orgName", orgName, Ex_GetRoamingDir() + "config.ini");
-			WriteIniString("client", "clientId", clientId, Ex_GetRoamingDir() + "config.ini");
-			WriteIniString("client", "dataDir", dataDir, Ex_GetRoamingDir() + "config.ini");
-			QMessageBox::information(NULL, LoadLanguageString("setting", "tip"), LoadLanguageString("setting", "succ"), QMessageBox::Yes);
-			
-			this->hide();
-		}
-		else
-		{
-			QMessageBox::critical(NULL, LoadLanguageString("setting", "tip"), LoadLanguageString("setting", "fail"), QMessageBox::Yes);
-			lineeditBaseDir->clear();
-			return;
-		}
+		WriteIniString("client", "orgId", orgId, Ex_GetRoamingDir() + "config.ini");
+		WriteIniString("client", "orgName", orgName, Ex_GetRoamingDir() + "config.ini");
+		WriteIniString("client", "clientId", clientId, Ex_GetRoamingDir() + "config.ini");
+		WriteIniString("client", "dataDir", dataDir, Ex_GetRoamingDir() + "config.ini");
+		WriteIniString("client", "api", api, Ex_GetRoamingDir() + "config.ini");
+		QMessageBox::information(NULL, LoadLanguageString("setting", "tip"), LoadLanguageString("setting", "succ"), QMessageBox::Yes);
+
+		this->hide();
+		emit(toStartFileSystemWatcher());
 	}
 	else
 	{
-		if (m_httpRequestModel->updateSetting(orgId, orgName, dataDir, clientId) == true)
-		{
-			WriteIniString("client", "orgId", orgId, Ex_GetRoamingDir() + "config.ini");
-			WriteIniString("client", "orgName", orgName, Ex_GetRoamingDir() + "config.ini");
-			WriteIniString("client", "clientId", clientId, Ex_GetRoamingDir() + "config.ini");
-			WriteIniString("client", "dataDir", dataDir, Ex_GetRoamingDir() + "config.ini");
-			QMessageBox::information(NULL, LoadLanguageString("setting", "tip"), LoadLanguageString("setting", "succ"), QMessageBox::Yes);
-
-			this->hide();
-		}
-		else
-		{
-			QMessageBox::critical(NULL, LoadLanguageString("setting", "tip"), LoadLanguageString("setting", "fail"), QMessageBox::Yes);
-			lineeditBaseDir->clear();
-			return;
-		}
+		QMessageBox::critical(NULL, LoadLanguageString("setting", "tip"), LoadLanguageString("setting", "fail"), QMessageBox::Yes);
+		lineeditBaseDir->clear();
+		return;
 	}
+
 }
 
 void SettingWidget::onChoseDir()

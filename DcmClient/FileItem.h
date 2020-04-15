@@ -18,6 +18,7 @@ public:
 	FileItem(QWidget *parent,QString file, DOWNLOADSTATUS status);
 	~FileItem();
 	void upload();
+	QString getFilehash();
 protected:
 	virtual void paintEvent(QPaintEvent *event);
 private:
@@ -30,6 +31,6 @@ private:
 	QProgressBar *m_progressBar;//上传进度条	
 	QString filePath;
 	
-	
+	QString  hashValue;
 
 };

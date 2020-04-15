@@ -32,7 +32,8 @@ private:
 
 	QPushButton *pushbuttonCancel;
 	QPushButton *pushbuttonOK;
-
+signals:
+	void toStartFileSystemWatcher();
 private slots:
 	void onOk();
 	void onChoseDir();

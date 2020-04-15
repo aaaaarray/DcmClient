@@ -17,7 +17,8 @@ public:
 
 	QSystemTrayIcon *systray;
 	void closeEvent(QCloseEvent *event);
-
+signals:
+	void toStartFileSystemWatcher();
 private slots:
 	void showDetils();
 	void showSetting();
@@ -25,7 +26,7 @@ private slots:
 	void trayActivated(QSystemTrayIcon::ActivationReason reason);
 	void fileChanged(QString path);
 	void dirChanged(QString path);
-	
+	void setFileSystemWatcher();
 private:
 	QAction *action_detils, *action_setting, *action_about, *action_quit;
 	SettingWidget *settingWidget;
@@ -33,7 +34,7 @@ private:
 	
 	WatcherFileThread *m_WatcherFileThread;
 	void init();
-	void setFileSystemWatcher();
+	
 	
 	
 

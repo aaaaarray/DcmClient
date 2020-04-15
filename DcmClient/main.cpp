@@ -14,6 +14,7 @@
 #include <qfileinfo.h>
 #include <qdesktopservices.h>
 #include "DateUtils.h"
+
 bool CheckUpdate(int &bForcedUpgrade, QString &strRemoteVersion, QString &strFileUrl)
 {
 	QString strLocalVersion = ReadIniString("Version", "Version", m_gRunConfig);
@@ -67,6 +68,7 @@ int main(int argc, char *argv[])
 	a.setQuitOnLastWindowClosed(false);
 	g_strResPath = GetRunDir() + "res/default/";//初始化资源路径
 	m_gRunConfig = GetRunDir() + "res/setting.ini";
+
 	QString strRunName = a.applicationDisplayName();
 	int nCurpid = _getpid();
 	int n = AlreadyRunning(strRunName + ".exe", nCurpid);

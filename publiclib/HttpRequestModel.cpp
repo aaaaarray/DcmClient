@@ -16,6 +16,7 @@
 #include <QTimer>
 #include <QJsonObject>
 #include <QJsonDocument>
+
 using namespace std;
 
 HttpRequestModel* HttpRequestModel::_value = 0;
@@ -70,30 +71,48 @@ QString HttpRequestModel::getDateEncrpt()
 	return key;
 }
 
-bool HttpRequestModel::getClientId(QString orgId, QString orgName, QString dataDir, QString& clientId)
+bool HttpRequestModel::InitClient(QString orgId, QString orgName, QString dataDir, QString& clientId, QString &api)
 {
 	QString mac;
 	getMacByGetAdaptersInfo( mac);
+	QString strLocalVersion = ReadIniString("Version", "Version", m_gRunConfig);
+	QDateTime local(QDateTime::currentDateTime());
+	QString localTime = local.toString("yyyyMMddhhmmss");
 	QJsonObject json;
+	if (clientId != NULL&&clientId != ""){
+		json.insert("clientId", clientId);
+	}
 	json.insert("orgId", orgId);
 	json.insert("orgName", orgName);
 	json.insert("dataDir", dataDir);
 	json.insert("mac", mac);
-
+	json.insert("version", strLocalVersion);
+	json.insert("time", localTime);
+	QString key = "orgId=" + orgId + "&time=" + localTime;
+	json.insert("key", Md5(key));
+	qDebug()<< "------------>   "<<QString(QJsonDocument(json).toJson());
 	QString response_data;
-	int ret = postJsonEx("base/init", json, response_data);
+	int ret = postJsonEx("/base/init", json, response_data);
 	if (ret != 0)
 	{
 		return false;
 	}
-
-	if (!jr->Json_Parse_ClientId(response_data, clientId))
+	QJsonParseError json_error;
+	QByteArray bytes = response_data.toUtf8();
+	QJsonDocument parse_doucment = QJsonDocument::fromJson(bytes, &json_error);
+	if (json_error.error != QJsonParseError::NoError)
 	{
-		log_error("Parse fail.");
-		return false;		
+		return false;
 	}
-
-	log_info("Success.");
+	if (parse_doucment.isObject())
+	{
+		QJsonObject root = parse_doucment.object();
+		if (root["code"].toString() == "0000"){
+			clientId = root["clientId"].toString();
+			api = root["api"].toString();
+			return true;
+		}
+	}
 	return true;
 }
 
@@ -203,7 +222,7 @@ bool HttpRequestModel::PackageLog(int nUserID, int nRoomID, bool bCoredump)
 	return false;
 }
 
-bool HttpRequestModel::uploadFile(QString filePath)
+bool HttpRequestModel::uploadFile(QString filePath, QString fileHash)
 {
 	QString orgId = ReadIniString("client", "orgId", Ex_GetRoamingDir() + "config.ini");
 	QString orgName = ReadIniString("client", "orgName", Ex_GetRoamingDir() + "config.ini");
@@ -211,18 +230,8 @@ bool HttpRequestModel::uploadFile(QString filePath)
 	QString mac;
 
 	getMacByGetAdaptersInfo(mac);
-	QString  hashValue;
-	QFile filehash(filePath); //stFilePath文件的绝对路径
-	if (filehash.open(QIODevice::ReadOnly)) //只读方式打开
-	{
-		QCryptographicHash hash(QCryptographicHash::Md5);
-		if (!filehash.atEnd())
-		{
-			hash.addData(filehash.readAll());
-			hashValue.append(hash.result().toHex());
-		}
-		filehash.close();
-	}
+	
+	
 	QDateTime local(QDateTime::currentDateTime());
 	QString localTime = local.toString("yyyyMMddhhmmss");
 		
@@ -233,7 +242,7 @@ bool HttpRequestModel::uploadFile(QString filePath)
 	params.insert(std::pair<QString, QString>("clientId", clientId));	
 	params.insert(std::pair<QString, QString>("fileName", file.fileName()));
 	params.insert(std::pair<QString, QString>("mac", mac));
-	params.insert(std::pair<QString, QString>("hash", hashValue));
+	params.insert(std::pair<QString, QString>("hash", fileHash));
 	params.insert(std::pair<QString, QString>("time", localTime));
 
 	//http://127.0.0.1:8011/wylm/portal/file/store
@@ -245,6 +254,21 @@ bool HttpRequestModel::uploadFile(QString filePath)
 		if (postfile(strSlaveUrl, params, filePath, file.fileName(), response_data) != 0)
 			return false;
 	}
+	QJsonParseError json_error;
+	QByteArray bytes = response_data.toUtf8();
+	QJsonDocument parse_doucment = QJsonDocument::fromJson(bytes, &json_error);
+	if (json_error.error != QJsonParseError::NoError)
+	{
+		return false;
+	}
+	if (parse_doucment.isObject())
+	{
+		QJsonObject root = parse_doucment.object();
+		if (root["code"].toString() == "0000" || root["code"].toString() == "DCM002"){
+			return true;
+		}
+	}
+	return false;
 }
 bool HttpRequestModel::sendRequest(const int nUserID, const int nRoomID, const QString zipfile)
 {
@@ -318,6 +342,18 @@ bool HttpRequestModel::getMacByGetAdaptersInfo(QString& macOUT)
 	return ret;
 }
 
+QString HttpRequestModel::Md5(QString value)
+{
+	QString md5;
+	QByteArray ba, bb;
+	QCryptographicHash md(QCryptographicHash::Md5);
+	ba.append(value);
+	md.addData(ba);
+	bb = md.result();
+	md5.append(bb.toHex());
+	return md5;
+}
+
 bool HttpRequestModel::getVersion(QString &strVersion, QString& strForcedUpgradeVersion, QString &cstrUrl)
 {
 	QJsonObject json;
@@ -325,7 +361,7 @@ bool HttpRequestModel::getVersion(QString &strVersion, QString& strForcedUpgrade
 	json.insert("VerificationKey", getDateEncrpt());
 
 	QString response_data;
-	int ret = postJsonEx("base/getClientVersion", json, response_data);
+	int ret = postJsonEx("/base/getClientVersion", json, response_data);
 	if (ret != 0)
 	{
 		return false;

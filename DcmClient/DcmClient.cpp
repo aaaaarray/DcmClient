@@ -53,12 +53,16 @@ DcmClient::DcmClient(QWidget *parent)
 	connect(action_setting, SIGNAL(triggered(bool)), this, SLOT(showSetting()));
 	connect(action_about, SIGNAL(triggered(bool)), this, SLOT(about()));
 	connect(action_quit, SIGNAL(triggered()), qApp, SLOT(quit()));
+	
 
 	settingWidget = new SettingWidget();
 	settingWidget->hide();
+	
 	downLoadWidget = new DownLoadWidget();
 	downLoadWidget->show();
-	setFileSystemWatcher();
+	connect(this, SIGNAL(toStartFileSystemWatcher()), this, SLOT(setFileSystemWatcher()));
+	connect(settingWidget, SIGNAL(toStartFileSystemWatcher()), this, SLOT(setFileSystemWatcher()));
+	emit(toStartFileSystemWatcher());
 }
 
 
@@ -86,10 +90,6 @@ void DcmClient::trayActivated(QSystemTrayIcon::ActivationReason reason)
 
 void DcmClient::showDetils()
 {
-	/*move((QApplication::desktop()->width() - width()) / 2, (QApplication::desktop()->height() - height()) / 2);
-	show();
-	raise();
-	activateWindow();*/
 	downLoadWidget->show();
 }
 void DcmClient::showSetting()
@@ -115,18 +115,22 @@ void DcmClient::setFileSystemWatcher()
 	QString orgName = ReadIniString("client", "orgName", Ex_GetRoamingDir() + "config.ini");
 	QString clientId = ReadIniString("client", "clientId", Ex_GetRoamingDir() + "config.ini");
 	QString dataDir = ReadIniString("client", "dataDir", Ex_GetRoamingDir() + "config.ini");
-	if (orgId == "" || orgName == "" || clientId == "" || clientId == ""){
-		return;
+	if (orgId == "" || orgName == "" || clientId == "" || dataDir == ""){
+		settingWidget->show();
+	}
+	else
+	{
+		if (m_WatcherFileThread != NULL){
+			delete m_WatcherFileThread;
+			m_WatcherFileThread = NULL;
+		}
+		m_WatcherFileThread = new WatcherFileThread(this);
+		connect(m_WatcherFileThread, SIGNAL(toAddFile(QString)), downLoadWidget, SLOT(addFile(QString)));
+		m_WatcherFileThread->setWatchDir(dataDir);
+		m_WatcherFileThread->start();
 	}
 
-	if (m_WatcherFileThread != NULL){
-		delete m_WatcherFileThread;
-		m_WatcherFileThread = NULL;
-	}
-	m_WatcherFileThread = new WatcherFileThread(this);
-	connect(m_WatcherFileThread, SIGNAL(toAddFile(QString)), downLoadWidget, SLOT(addFile(QString)));
-	m_WatcherFileThread->setWatchDir(dataDir);
-	m_WatcherFileThread->start();
+	
 }
 
 void DcmClient::fileChanged(QString path){

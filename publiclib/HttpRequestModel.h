@@ -16,13 +16,13 @@ public:
 	static HttpRequestModel *getHttpRequestModel();
 	void setApi(QString api);
 	bool getVersion(QString &strVersion, QString& strForcedUpgradeVersion, QString &cstrUrl);
-	bool getClientId(QString orgId, QString orgName, QString dataDir, QString& clientId);
+	bool InitClient(QString orgId, QString orgName, QString dataDir, QString& clientId, QString& api);
 	bool updateSetting(QString orgId, QString orgName, QString dataDir, QString clientId);
 
-
+	QString Md5(QString value);
 	bool PackageLog(int nUserID, int nRoomID, bool bCoredump = false);
 
-	bool uploadFile(QString filePath);
+	bool uploadFile(QString filePath, QString fileHash);
 	
 	bool getMacByGetAdaptersInfo(QString& macOUT);
 private:
