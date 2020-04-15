@@ -9,6 +9,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include "HttpRequestModel.h"
+#include <QProcess>
 FileItem::FileItem(QWidget *parent, QString file, UPLOADSTATUS status)
 	: QWidget(parent)
 {
@@ -72,11 +73,14 @@ FileItem::FileItem(QWidget *parent, QString file, UPLOADSTATUS status)
 	}
 	
 	m_progressBar->hide();
+	connect(m_FileLocationButton, SIGNAL(pressed()), this, SLOT(openFile()));
+	connect(m_deleteButton, SIGNAL(pressed()), this, SLOT(deleteFile()));
 }
 
 FileItem::~FileItem()
 {
 }
+
 
 
 void FileItem::paintEvent(QPaintEvent *event)
@@ -119,3 +123,15 @@ QString FileItem::getFilehash()
 	return hashValue;
 }
 
+void FileItem::openFile(){
+	QProcess process;
+	QString  str = filePath;
+	str.replace("/", "\\"); // 只能识别 "\"
+	QString cmd = QString("explorer.exe /select,\"%1\"").arg(str);
+	qDebug() << cmd;
+	process.startDetached(cmd);
+	
+}
+void FileItem::deleteFile(){
+
+}

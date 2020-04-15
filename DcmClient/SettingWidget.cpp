@@ -146,7 +146,10 @@ void SettingWidget::onOk()
 	{
 		WriteIniString("client", "orgId", orgId, Ex_GetRoamingDir() + "config.ini");
 		WriteIniString("client", "orgName", orgName, Ex_GetRoamingDir() + "config.ini");
-		WriteIniString("client", "clientId", clientId, Ex_GetRoamingDir() + "config.ini");
+		if (clientId != NULL&&clientId != ""){
+			lineeditClientId->setText(clientId);
+			WriteIniString("client", "clientId", clientId, Ex_GetRoamingDir() + "config.ini");
+		}
 		WriteIniString("client", "dataDir", dataDir, Ex_GetRoamingDir() + "config.ini");
 		WriteIniString("client", "api", api, Ex_GetRoamingDir() + "config.ini");
 		QMessageBox::information(NULL, LoadLanguageString("setting", "tip"), LoadLanguageString("setting", "succ"), QMessageBox::Yes);

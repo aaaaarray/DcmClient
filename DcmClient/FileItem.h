@@ -34,4 +34,7 @@ private:
 	QString  hashValue;
 signals:
 	void toDeleteFile(QString hash);
+private slots:
+	void openFile();
+	void deleteFile();
 };
