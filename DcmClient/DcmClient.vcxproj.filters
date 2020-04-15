@@ -48,10 +48,10 @@
     <ClCompile Include="WatcherFileThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DownLoadListWidget.cpp">
+    <ClCompile Include="UpLoadListWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DownLoadWidget.cpp">
+    <ClCompile Include="UpLoadWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -71,10 +71,10 @@
     <QtMoc Include="WatcherFileThread.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="DownLoadListWidget.h">
+    <QtMoc Include="UpLoadWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="DownLoadWidget.h">
+    <QtMoc Include="UpLoadListWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

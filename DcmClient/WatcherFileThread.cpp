@@ -85,7 +85,7 @@ void WatcherFileThread::WatchDirectories(HANDLE hCompPort)
 				{
 				case FILE_ACTION_ADDED:		
 					qDebug() << QString::fromWCharArray(wcFileName) << " add";
-					emit(toAddFile(watchDir + QString::fromWCharArray(wcFileName)));
+					emit(toAddUploadingFile(watchDir + QString::fromWCharArray(wcFileName)));
 					break;
 				case FILE_ACTION_REMOVED:				
 					break;
@@ -120,7 +120,7 @@ void WatcherFileThread::listFile(QString path)
 	while (!list.isEmpty()){
 		QFileInfo tem = list.last();
 		if (!tem.isDir()){
-			emit(toAddFile(tem.filePath()));
+			emit(toAddUploadingFile(tem.filePath()));
 			list.removeLast();
 		}
 		else if (tem.fileName() != "." && tem.fileName() != ".."){

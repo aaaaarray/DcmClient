@@ -1,6 +1,6 @@
-#include "DownLoadListWidget.h"
+#include "UpLoadListWidget.h"
 #include <QDebug>
-DownLoadListWidget::DownLoadListWidget(QWidget *parent, DOWNLOADSTATUS status)
+UpLoadListWidget::UpLoadListWidget(QWidget *parent, UPLOADSTATUS status)
 	: QWidget(parent)
 {
 	setWindowFlags(Qt::FramelessWindowHint | Qt::WindowMinimizeButtonHint);
@@ -51,24 +51,56 @@ DownLoadListWidget::DownLoadListWidget(QWidget *parent, DOWNLOADSTATUS status)
 	
 }
 
-DownLoadListWidget::~DownLoadListWidget()
+UpLoadListWidget::~UpLoadListWidget()
 {
 }
 
-void DownLoadListWidget::addFile(QString file, DOWNLOADSTATUS status)
+void UpLoadListWidget::addFile(QString file, UPLOADSTATUS status)
 {
-	if (status == DOWNLOADING){
-		qDebug() << "addFile -> " << file;
+	if (status == UPLOADING){
+		qDebug() << "addDonwloadingFile -> " << file;
 		FileItem *fileitem = new FileItem(m_listFileWidget->parentWidget(), file, status);
+		connect(fileitem, SIGNAL(toDeleteFile(QString)), this, SLOT(deleteFile(QString)));
 		QListWidgetItem* item = new QListWidgetItem(m_listFileWidget);
 		item->setBackgroundColor(Qt::gray);
 		int width = m_listFileWidget->width();
 		fileitem->setFixedWidth(width );
 		item->setSizeHint(QSize(width, 100));
-
+		item->setText(file);
 		m_listFileWidget->insertItem(m_listFileWidget->count(), item);
 		m_listFileWidget->setItemWidget(item, fileitem);
 		m_listFileWidget->show();
 		fileitem->upload();
 	}
+	else{
+		qDebug() << "addDonwloadedFile -> " << file;
+		FileItem *fileitem = new FileItem(m_listFileWidget->parentWidget(), file, status);
+		connect(fileitem, SIGNAL(toDeleteFile(QString)), this, SLOT(deleteFile(QString)));
+		QListWidgetItem* item = new QListWidgetItem(m_listFileWidget);
+		item->setBackgroundColor(Qt::gray);
+		int width = m_listFileWidget->width();
+		fileitem->setFixedWidth(width);
+		item->setSizeHint(QSize(width, 100));
+		item->setText(file);
+		m_listFileWidget->insertItem(m_listFileWidget->count(), item);
+		m_listFileWidget->setItemWidget(item, fileitem);
+		m_listFileWidget->show();
+	}
 }
+
+void UpLoadListWidget::deleteFile(QString filePath)
+{
+	int row = 0;
+	QString line;
+	while (row<(m_listFileWidget->count()))
+	{
+		QString text= m_listFileWidget->item(row)->text();
+		if (text == filePath){
+			m_listFileWidget->takeItem(row);
+			emit(toAddDonwloadedFile(filePath));
+		}
+		
+		row++;
+	}
+}
+

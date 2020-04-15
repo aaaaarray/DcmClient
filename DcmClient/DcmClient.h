@@ -5,7 +5,7 @@
 #include <QSystemTrayIcon>
 
 #include "SettingWidget.h"
-#include "DownLoadWidget.h"
+#include "UpLoadWidget.h"
 #include "WatcherFileThread.h"
 
 class DcmClient : public QWidget
@@ -30,7 +30,7 @@ private slots:
 private:
 	QAction *action_detils, *action_setting, *action_about, *action_quit;
 	SettingWidget *settingWidget;
-	DownLoadWidget *downLoadWidget;
+	UpLoadWidget *upLoadWidget;
 	
 	WatcherFileThread *m_WatcherFileThread;
 	void init();

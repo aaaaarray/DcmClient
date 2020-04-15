@@ -120,8 +120,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DcmClient.cpp" />
-    <ClCompile Include="DownLoadListWidget.cpp" />
-    <ClCompile Include="DownLoadWidget.cpp" />
+    <ClCompile Include="UpLoadListWidget.cpp" />
+    <ClCompile Include="UpLoadWidget.cpp" />
     <ClCompile Include="FileItem.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SettingWidget.cpp" />
@@ -159,13 +159,13 @@
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="DownLoadListWidget.h">
+    <QtMoc Include="UpLoadListWidget.h">
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;.\..\publiclib</IncludePath>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;.\..\publiclib</IncludePath>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="DownLoadWidget.h">
+    <QtMoc Include="UpLoadWidget.h">
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;.\..\publiclib</IncludePath>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;.\..\publiclib</IncludePath>
     </QtMoc>

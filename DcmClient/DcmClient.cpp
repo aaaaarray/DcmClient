@@ -58,8 +58,8 @@ DcmClient::DcmClient(QWidget *parent)
 	settingWidget = new SettingWidget();
 	settingWidget->hide();
 	
-	downLoadWidget = new DownLoadWidget();
-	downLoadWidget->show();
+	upLoadWidget = new UpLoadWidget();
+	upLoadWidget->show();
 	connect(this, SIGNAL(toStartFileSystemWatcher()), this, SLOT(setFileSystemWatcher()));
 	connect(settingWidget, SIGNAL(toStartFileSystemWatcher()), this, SLOT(setFileSystemWatcher()));
 	emit(toStartFileSystemWatcher());
@@ -90,7 +90,7 @@ void DcmClient::trayActivated(QSystemTrayIcon::ActivationReason reason)
 
 void DcmClient::showDetils()
 {
-	downLoadWidget->show();
+	upLoadWidget->show();
 }
 void DcmClient::showSetting()
 {
@@ -125,7 +125,7 @@ void DcmClient::setFileSystemWatcher()
 			m_WatcherFileThread = NULL;
 		}
 		m_WatcherFileThread = new WatcherFileThread(this);
-		connect(m_WatcherFileThread, SIGNAL(toAddFile(QString)), downLoadWidget, SLOT(addFile(QString)));
+		connect(m_WatcherFileThread, SIGNAL(toAddUploadingFile(QString)), upLoadWidget, SLOT(addFile(QString)));
 		m_WatcherFileThread->setWatchDir(dataDir);
 		m_WatcherFileThread->start();
 	}

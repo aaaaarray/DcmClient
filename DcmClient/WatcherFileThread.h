@@ -11,7 +11,7 @@ public:
 	~WatcherFileThread();
 	void setWatchDir(QString watchDir);
 signals:
-	void toAddFile(QString);
+	void toAddUploadingFile(QString);
 protected:
 	virtual void run();
 	QString watchDir;

@@ -1,6 +1,6 @@
 ﻿#include "DcmClient.h"
 #include "SettingWidget.h"
-#include "DownLoadWidget.h"
+#include "UpLoadWidget.h"
 #include <QtWidgets/QApplication>
 #include "def.h"
 #include "IniEx.h"

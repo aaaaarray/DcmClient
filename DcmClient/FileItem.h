@@ -4,18 +4,18 @@
 #include <qpushbutton.h>
 #include <qlabel.h>
 #include <QProgressBar>
-enum DOWNLOADSTATUS
+enum UPLOADSTATUS
 {
-	DOWNLOADING,
-	DOWNLOADED,
-	DOWNLOADFAIL
+	UPLOADING,
+	UPLOADED,
+	UPLOADFAIL
 };
 class FileItem : public QWidget
 {
 	Q_OBJECT
 
 public:
-	FileItem(QWidget *parent,QString file, DOWNLOADSTATUS status);
+	FileItem(QWidget *parent, QString file, UPLOADSTATUS status);
 	~FileItem();
 	void upload();
 	QString getFilehash();
@@ -32,5 +32,6 @@ private:
 	QString filePath;
 	
 	QString  hashValue;
-
+signals:
+	void toDeleteFile(QString hash);
 };
