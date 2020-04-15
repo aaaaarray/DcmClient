@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QCryptographicHash>
 #include <QFile>
+#include <QFileInfo>
 #include "HttpRequestModel.h"
 FileItem::FileItem(QWidget *parent, QString file, UPLOADSTATUS status)
 	: QWidget(parent)
@@ -33,7 +34,19 @@ FileItem::FileItem(QWidget *parent, QString file, UPLOADSTATUS status)
 	m_progressBar->setGeometry(100, 70, 720, 4);
 
 	m_statusLabel->setAlignment(Qt::AlignRight);
-
+	
+	QFile filehash(filePath);
+	if (filehash.open(QIODevice::ReadOnly))
+	{
+		
+		QCryptographicHash hash(QCryptographicHash::Md5);
+		if (!filehash.atEnd())
+		{
+			hash.addData(filehash.readAll());
+			hashValue.append(hash.result().toHex());
+		}
+		filehash.close();
+	}
 
 	QString dataDir = ReadIniString("client", "dataDir", Ex_GetRoamingDir() + "config.ini");
 	QImage image;
@@ -49,19 +62,16 @@ FileItem::FileItem(QWidget *parent, QString file, UPLOADSTATUS status)
 		"QPushButton:hover{border-image: url(" + g_strResPath + "delete.png);}"
 		"QPushButton:pressed{border-image: url(" + g_strResPath + "delete.png);}");
 
-	m_progressLabel->setText("xxxxxx");
-	m_statusLabel->setText("xxxxxx");
-	QFile filehash(filePath);
-	if (filehash.open(QIODevice::ReadOnly))
-	{
-		QCryptographicHash hash(QCryptographicHash::Md5);
-		if (!filehash.atEnd())
-		{
-			hash.addData(filehash.readAll());
-			hashValue.append(hash.result().toHex());
-		}
-		filehash.close();
+	QFileInfo info(filePath);
+	m_progressLabel->setText(LoadLanguageString("upload", "tip") + QString::number(info.size()) + " Bytes");
+	if (status == UPLOADING){
+		m_statusLabel->setText(LoadLanguageString("upload", "upload"));
 	}
+	else{
+		m_statusLabel->setText(LoadLanguageString("upload", "uploaded"));
+	}
+	
+	m_progressBar->hide();
 }
 
 FileItem::~FileItem()
@@ -92,7 +102,7 @@ void FileItem::paintEvent(QPaintEvent *event)
 
 void FileItem::upload()
 {
-	
+	//m_statusLabel->setText(LoadLanguageString("upload", "uploading"));
 	HttpRequestModel *m_httpRequestModel = HttpRequestModel::getHttpRequestModel();
 	if (m_httpRequestModel->uploadFile(filePath, hashValue)){
 		//upload success

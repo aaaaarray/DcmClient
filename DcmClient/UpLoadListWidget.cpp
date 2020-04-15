@@ -58,7 +58,7 @@ UpLoadListWidget::~UpLoadListWidget()
 void UpLoadListWidget::addFile(QString file, UPLOADSTATUS status)
 {
 	if (status == UPLOADING){
-		qDebug() << "addDonwloadingFile -> " << file;
+		qDebug() << "addUploadingFile -> " << file;
 		FileItem *fileitem = new FileItem(m_listFileWidget->parentWidget(), file, status);
 		connect(fileitem, SIGNAL(toDeleteFile(QString)), this, SLOT(deleteFile(QString)));
 		QListWidgetItem* item = new QListWidgetItem(m_listFileWidget);
@@ -73,7 +73,7 @@ void UpLoadListWidget::addFile(QString file, UPLOADSTATUS status)
 		fileitem->upload();
 	}
 	else{
-		qDebug() << "addDonwloadedFile -> " << file;
+		qDebug() << "addUploadedFile -> " << file;
 		FileItem *fileitem = new FileItem(m_listFileWidget->parentWidget(), file, status);
 		connect(fileitem, SIGNAL(toDeleteFile(QString)), this, SLOT(deleteFile(QString)));
 		QListWidgetItem* item = new QListWidgetItem(m_listFileWidget);
@@ -97,7 +97,7 @@ void UpLoadListWidget::deleteFile(QString filePath)
 		QString text= m_listFileWidget->item(row)->text();
 		if (text == filePath){
 			m_listFileWidget->takeItem(row);
-			emit(toAddDonwloadedFile(filePath));
+			emit(toAddUploadedFile(filePath));
 		}
 		
 		row++;

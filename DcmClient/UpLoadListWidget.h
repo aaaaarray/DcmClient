@@ -13,7 +13,7 @@ public:
 	~UpLoadListWidget();
 	void addFile(QString file, UPLOADSTATUS status);
 signals:
-	void toAddDonwloadedFile(QString);
+	void toAddUploadedFile(QString);
 private slots:
 	void deleteFile(QString filePath);
 

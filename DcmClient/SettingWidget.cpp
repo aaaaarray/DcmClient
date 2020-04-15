@@ -7,6 +7,8 @@
 #include "IniEx.h"
 #include "DirFileEx.h"
 #include "HttpRequestModel.h"
+#include <QSettings>
+#define REG_RUN "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run"
 SettingWidget::SettingWidget(QWidget *parent)
 	: QWidget(parent)
 {
@@ -72,10 +74,14 @@ SettingWidget::SettingWidget(QWidget *parent)
 	QString orgName = ReadIniString("client", "orgName", Ex_GetRoamingDir() + "config.ini");
 	QString clientId = ReadIniString("client", "clientId", Ex_GetRoamingDir() + "config.ini");
 	QString dataDir = ReadIniString("client", "dataDir", Ex_GetRoamingDir() + "config.ini");
+	QString autoStart = ReadIniString("client", "autoStart", Ex_GetRoamingDir() + "config.ini");
 	lineeditOrgId->setText(orgId);
 	lineeditOrgName->setText(orgName);
 	lineeditClientId->setText(clientId);
 	lineeditBaseDir->setText(dataDir);
+
+	checkBoxSelfStart->setChecked(autoStart == "1" ? true : false);
+	
 
 }
 
@@ -122,6 +128,19 @@ void SettingWidget::onOk()
 	QString dataDir = lineeditBaseDir->text();
 	QString api;
 	HttpRequestModel *m_httpRequestModel = HttpRequestModel::getHttpRequestModel();
+
+	QString application_name = QApplication::applicationName();
+	QSettings *settings = new QSettings(REG_RUN, QSettings::NativeFormat);
+	if (checkBoxSelfStart->isChecked()){
+		QString application_path = QApplication::applicationFilePath();
+		settings->setValue(application_name, application_path.replace("/", "\\"));
+		WriteIniString("client", "autoStart","1", Ex_GetRoamingDir() + "config.ini");
+	}
+	else{
+		settings->remove(application_name);
+		WriteIniString("client", "autoStart", "0", Ex_GetRoamingDir() + "config.ini");
+	}
+	delete settings;
 
 	if (m_httpRequestModel->InitClient(orgId, orgName, dataDir, clientId, api) == true)
 	{
