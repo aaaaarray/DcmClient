@@ -58,7 +58,8 @@ DcmClient::DcmClient(QWidget *parent)
 	upLoadWidget->show();
 	connect(this, SIGNAL(toStartFileSystemWatcher()), this, SLOT(setFileSystemWatcher()));
 	connect(settingWidget, SIGNAL(toStartFileSystemWatcher()), this, SLOT(setFileSystemWatcher()));
-	emit(toStartFileSystemWatcher());
+	settingWidget->init();
+	//emit(toStartFileSystemWatcher());
 }
 
 

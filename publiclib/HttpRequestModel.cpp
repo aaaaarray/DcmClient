@@ -113,7 +113,48 @@ bool HttpRequestModel::InitClient(QString orgId, QString orgName, QString dataDi
 			return true;
 		}
 	}
-	return true;
+	return false;
+}
+int HttpRequestModel::CheckClient(QString orgId, QString orgName, QString dataDir, QString clientId)
+{
+	QString mac;
+	getMacByGetAdaptersInfo(mac);
+	QString strLocalVersion = ReadIniString("Version", "Version", m_gRunConfig);
+	QDateTime local(QDateTime::currentDateTime());
+	QString localTime = local.toString("yyyyMMddhhmmss");
+	QJsonObject json;
+	json.insert("clientId", clientId);
+	json.insert("orgId", orgId);
+	json.insert("orgName", orgName);
+	json.insert("dataDir", dataDir);
+	json.insert("mac", mac);
+	json.insert("version", strLocalVersion);
+	json.insert("time", localTime);
+	QString key = "orgId=" + orgId + "&time=" + localTime;
+	json.insert("key", Md5(key));
+	qDebug() << "------------>   " << QString(QJsonDocument(json).toJson());
+	QString response_data;
+	int ret = postJsonEx("/base/check", json, response_data);
+	if (ret != 0)
+	{
+		return 404;
+	}
+	QJsonParseError json_error;
+	QByteArray bytes = response_data.toUtf8();
+	QJsonDocument parse_doucment = QJsonDocument::fromJson(bytes, &json_error);
+	if (json_error.error != QJsonParseError::NoError)
+	{
+		return -1;
+	}
+	if (parse_doucment.isObject())
+	{
+		QJsonObject root = parse_doucment.object();
+		if (root["code"].toString() == "0000"){
+			return 0;
+		}
+		return 1;
+	}
+	return -2;
 }
 
 bool HttpRequestModel::updateSetting(QString orgId, QString orgName, QString dataDir, QString clientId){

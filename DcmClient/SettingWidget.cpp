@@ -89,6 +89,20 @@ SettingWidget::~SettingWidget()
 {
 }
 
+void SettingWidget::init(){
+	QString orgId = ReadIniString("client", "orgId", Ex_GetRoamingDir() + "config.ini");
+	QString orgName = ReadIniString("client", "orgName", Ex_GetRoamingDir() + "config.ini");
+	QString clientId = ReadIniString("client", "clientId", Ex_GetRoamingDir() + "config.ini");
+	QString dataDir = ReadIniString("client", "dataDir", Ex_GetRoamingDir() + "config.ini");
+	QString api;
+	HttpRequestModel *m_httpRequestModel = HttpRequestModel::getHttpRequestModel();
+	if (m_httpRequestModel->CheckClient(orgId, orgName, dataDir, clientId) == 1)
+	{
+		WriteIniString("client", "clientId", "", Ex_GetRoamingDir() + "config.ini");
+	}
+	emit(toStartFileSystemWatcher());
+}
+
 
 void SettingWidget::onOk()
 {
@@ -160,7 +174,9 @@ void SettingWidget::onOk()
 	else
 	{
 		QMessageBox::critical(NULL, LoadLanguageString("setting", "tip"), LoadLanguageString("setting", "fail"), QMessageBox::Yes);
-		lineeditBaseDir->clear();
+		//lineeditBaseDir->clear();
+		lineeditClientId->clear();
+		WriteIniString("client", "clientId", "", Ex_GetRoamingDir() + "config.ini");
 		return;
 	}
 

@@ -17,6 +17,7 @@ public:
 	void setApi(QString api);
 	bool getVersion(QString &strVersion, QString& strForcedUpgradeVersion, QString &cstrUrl);
 	bool InitClient(QString orgId, QString orgName, QString dataDir, QString& clientId, QString& api);
+	int CheckClient(QString orgId, QString orgName, QString dataDir, QString clientId);
 	bool updateSetting(QString orgId, QString orgName, QString dataDir, QString clientId);
 
 	QString Md5(QString value);
