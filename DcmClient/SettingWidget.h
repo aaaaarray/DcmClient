@@ -12,7 +12,6 @@ class SettingWidget : public QWidget
 public:
 	SettingWidget(QWidget *parent = 0);
 	~SettingWidget();
-	void init();
 private:
 	QLabel * labelOrgId;
 	QLineEdit * lineeditOrgId;

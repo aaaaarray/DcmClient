@@ -26,9 +26,11 @@ FileItem::FileItem(QWidget *parent, QString file, UPLOADSTATUS status)
 	m_fileNameLabel = new QLabel(this);
 	m_FileLocationButton = new QPushButton(this);
 	m_deleteButton = new QPushButton(this);
-	QLabel *m_progressLabel = new QLabel(this);
-	QLabel *m_statusLabel = new QLabel(this);
+	m_progressLabel = new QLabel(this);
+	m_statusLabel = new QLabel(this);
 	m_progressBar = new QProgressBar(this);
+	connect(m_FileLocationButton, SIGNAL(pressed()), this, SLOT(openFile()));
+	connect(m_deleteButton, SIGNAL(pressed()), this, SLOT(deleteFile()));
 
 	m_typeLabel->setGeometry(20, 20, 40, 40);
 	m_fileNameLabel->setGeometry(100, 15, 570, 25);
@@ -42,8 +44,7 @@ FileItem::FileItem(QWidget *parent, QString file, UPLOADSTATUS status)
 	
 	QFile filehash(filePath);
 	if (filehash.open(QIODevice::ReadOnly))
-	{
-		
+	{		
 		QCryptographicHash hash(QCryptographicHash::Md5);
 		if (!filehash.atEnd())
 		{
@@ -58,7 +59,6 @@ FileItem::FileItem(QWidget *parent, QString file, UPLOADSTATUS status)
 	image.load(g_strResPath + "default.png");
 	m_typeLabel->setPixmap(QPixmap::fromImage(image));
 	m_fileNameLabel->setText(file);
-
 	
 	m_FileLocationButton->setStyleSheet("QPushButton{border-image: url(" + g_strResPath + "filedir.png);}"
 		"QPushButton:hover{border-image: url(" + g_strResPath + "filedir.png);}"
@@ -74,6 +74,9 @@ FileItem::FileItem(QWidget *parent, QString file, UPLOADSTATUS status)
 	}
 	else if (m_status == UPLOADED){
 		m_statusLabel->setText(LoadLanguageString("upload", "uploaded"));
+		//上传成功后删除文件
+		//m_FileLocationButton->hide();
+		//QFile::remove(filePath);
 	}
 	else{
 		m_statusLabel->setText(LoadLanguageString("upload", "fail"));
@@ -85,26 +88,18 @@ FileItem::FileItem(QWidget *parent, QString file, UPLOADSTATUS status)
 		m_contextMenu->setStyleSheet("QMenu{background-color: rgb(238,242,241);border: none;}"
 			"QMenu::item{background-color: rgb(238,242,241);color: rgb(0, 0, 0);}"
 			"QMenu::item:selected{background-color: rgb(238,242,241);color: rgb(0, 0, 0);}");
-		connect(reUpload, SIGNAL(triggered()), this, SLOT(onTaskBoxContextMenuEvent()));
-		
-	}
-	
-	m_progressBar->hide();
-	connect(m_FileLocationButton, SIGNAL(pressed()), this, SLOT(openFile()));
-	connect(m_deleteButton, SIGNAL(pressed()), this, SLOT(deleteFile()));
-	
+		connect(reUpload, SIGNAL(triggered()), this, SLOT(onTaskBoxContextMenuEvent()));		
+	}	
+	m_progressBar->hide();	
 }
 
 FileItem::~FileItem()
 {
 }
 
-
-
 void FileItem::paintEvent(QPaintEvent *event)
 {
 	Q_UNUSED(event);
-
 	QPainter painter(this);
 	painter.setBrush(QColor(240, 240, 240));
 	QPen pen;
@@ -116,11 +111,7 @@ void FileItem::paintEvent(QPaintEvent *event)
 	//pen.setWidth(1);
 	painter.setPen(pen);
 	painter.drawLine(80, 1, 80, 80);
-
-
 }
-
-
 
 void FileItem::upload()
 {
@@ -134,7 +125,6 @@ void FileItem::upload()
 		//upload fail
 		emit(toUploadFail(filePath));
 	}
-
 }
 
 QString FileItem::getFilehash()
@@ -148,8 +138,7 @@ void FileItem::openFile(){
 	str.replace("/", "\\"); // 只能识别 "\"
 	QString cmd = QString("explorer.exe /select,\"%1\"").arg(str);
 	qDebug() << cmd;
-	process.startDetached(cmd);
-	
+	process.startDetached(cmd);	
 }
 void FileItem::deleteFile(){
 	emit(toDeleteFile(filePath));

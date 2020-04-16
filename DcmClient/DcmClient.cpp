@@ -3,8 +3,6 @@
 #include <QDesktopWidget>
 #include <QDateTime>
 #include <QDebug>
-
-
 #include <QJsonParseError>
 #include <QMenu>
 #include <QMessageBox>
@@ -49,8 +47,6 @@ DcmClient::DcmClient(QWidget *parent)
 	connect(action_setting, SIGNAL(triggered(bool)), this, SLOT(showSetting()));
 	connect(action_about, SIGNAL(triggered(bool)), this, SLOT(about()));
 	connect(action_quit, SIGNAL(triggered()), qApp, SLOT(quit()));
-	
-
 	settingWidget = new SettingWidget();
 	settingWidget->hide();
 	
@@ -62,12 +58,12 @@ DcmClient::DcmClient(QWidget *parent)
 	//emit(toStartFileSystemWatcher());
 }
 
-
 void DcmClient::closeEvent(QCloseEvent *event)
 {
 	hide();
 	event->ignore();
 }
+
 void DcmClient::trayActivated(QSystemTrayIcon::ActivationReason reason)
 {
 	qDebug() << reason;
@@ -89,10 +85,12 @@ void DcmClient::showDetils()
 {
 	upLoadWidget->show();
 }
+
 void DcmClient::showSetting()
 {
 	settingWidget->show();
 }
+
 void DcmClient::about()
 {
 	QMessageBox mb(QMessageBox::NoIcon, LoadLanguageString("menu", "about"), LoadLanguageString("about", "detils"));
@@ -100,10 +98,6 @@ void DcmClient::about()
 	mb.exec();
 	//QMessageBox::information(this, "Title", "Content");
 
-}
-
-void DcmClient::init(){
-	
 }
 
 void DcmClient::setFileSystemWatcher()
@@ -127,8 +121,6 @@ void DcmClient::setFileSystemWatcher()
 		m_WatcherFileThread->setWatchDir(dataDir);
 		m_WatcherFileThread->start();
 	}
-
-	
 }
 
 void DcmClient::fileChanged(QString path){
