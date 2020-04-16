@@ -57,35 +57,34 @@ UpLoadListWidget::~UpLoadListWidget()
 
 void UpLoadListWidget::addFile(QString file, UPLOADSTATUS status)
 {
+	FileItem *fileitem = new FileItem(m_listFileWidget->parentWidget(), file, status);
+	QListWidgetItem* item = new QListWidgetItem(m_listFileWidget);
+	item->setBackgroundColor(Qt::gray);
+	int width = m_listFileWidget->width();
+	fileitem->setFixedWidth(width);
+	item->setSizeHint(QSize(width, 100));
+	item->setText(file);
+	m_listFileWidget->insertItem(m_listFileWidget->count(), item);
+	m_listFileWidget->setItemWidget(item, fileitem);
+	m_listFileWidget->show();
 	if (status == UPLOADING){
 		qDebug() << "addUploadingFile -> " << file;
-		FileItem *fileitem = new FileItem(m_listFileWidget->parentWidget(), file, status);
-		connect(fileitem, SIGNAL(toDeleteFile(QString)), this, SLOT(deleteUploadingFile(QString)));
 		
-		QListWidgetItem* item = new QListWidgetItem(m_listFileWidget);
-		item->setBackgroundColor(Qt::gray);
-		int width = m_listFileWidget->width();
-		fileitem->setFixedWidth(width );
-		item->setSizeHint(QSize(width, 100));
-		item->setText(file);
-		m_listFileWidget->insertItem(m_listFileWidget->count(), item);
-		m_listFileWidget->setItemWidget(item, fileitem);
-		m_listFileWidget->show();
+		connect(fileitem, SIGNAL(toDeleteFile(QString)), this, SLOT(deleteUploadingFile(QString)));
+		connect(fileitem, SIGNAL(toUploadFail(QString)), this, SLOT(uploadFail(QString)));
+		connect(fileitem, SIGNAL(toUploadFail(QString)), this->parent(), SLOT(uploadFail(QString)));
+	
 		fileitem->upload();
 	}
-	else{
+	else if (status == UPLOADED)
+	{
 		qDebug() << "addUploadedFile -> " << file;
-		FileItem *fileitem = new FileItem(m_listFileWidget->parentWidget(), file, status);
 		connect(fileitem, SIGNAL(toDeleteFile(QString)), this, SLOT(deleteUploadedFile(QString)));
-		QListWidgetItem* item = new QListWidgetItem(m_listFileWidget);
-		item->setBackgroundColor(Qt::gray);
-		int width = m_listFileWidget->width();
-		fileitem->setFixedWidth(width);
-		item->setSizeHint(QSize(width, 100));
-		item->setText(file);
-		m_listFileWidget->insertItem(m_listFileWidget->count(), item);
-		m_listFileWidget->setItemWidget(item, fileitem);
-		m_listFileWidget->show();
+	}
+	else
+	{
+		qDebug() << "addUploadFailFile -> " << file;
+		connect(fileitem, SIGNAL(toDeleteFile(QString)), this, SLOT(deleteUploadingFile(QString)));
 	}
 }
 
@@ -114,13 +113,24 @@ void UpLoadListWidget::deleteUploadedFile(QString filePath)
 		QString text = m_listFileWidget->item(row)->text();
 		if (text == filePath){
 			m_listFileWidget->takeItem(row);
-			//emit(toAddUploadedFile(filePath));
 		}
-
 		row++;
 	}
 }
+void UpLoadListWidget::uploadFail(QString filePath)
+{
+	int row = 0;
+	QString line;
+	while (row<(m_listFileWidget->count()))
+	{
+		QString text = m_listFileWidget->item(row)->text();
+		if (text == filePath){
+			m_listFileWidget->takeItem(row);
+		}
+		row++;
+	}
 
+}
 void UpLoadListWidget::clearFile(){
 	m_listFileWidget->clear();
 }

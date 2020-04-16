@@ -71,6 +71,11 @@ void UpLoadWidget::upLoaded()
 	showUploading(false);
 }
 
+void UpLoadWidget::uploadFail(QString file)
+{
+	m_UpLoadingListWidget->addFile(file, UPLOADFAIL);
+}
+
 void UpLoadWidget::addFile(QString file){
 	m_UpLoadingListWidget->addFile(file, UPLOADING);
 }

@@ -10,8 +10,11 @@
 #include <QFileInfo>
 #include "HttpRequestModel.h"
 #include <QProcess>
+#include <QMenu>
+#include <QAction>
 FileItem::FileItem(QWidget *parent, QString file, UPLOADSTATUS status)
 	: QWidget(parent)
+	, m_status(status)
 {
 	filePath = file;
 	QPalette palette(this->palette());
@@ -68,14 +71,24 @@ FileItem::FileItem(QWidget *parent, QString file, UPLOADSTATUS status)
 	if (status == UPLOADING){
 		m_statusLabel->setText(LoadLanguageString("upload", "upload"));
 	}
-	else{
+	else if (status == UPLOADED){
 		m_statusLabel->setText(LoadLanguageString("upload", "uploaded"));
+	}
+	else{
+		m_statusLabel->setText(LoadLanguageString("upload", "fail"));
+		pMenu = new QMenu(this);
+
+		QAction *reUpload = new QAction(LoadLanguageString("upload", "reUpload"), this);
+		reUpload->setData(1);
+		pMenu->addAction(reUpload);
+		connect(reUpload, SIGNAL(triggered()), this, SLOT(onTaskBoxContextMenuEvent()));
+		
 	}
 	
 	m_progressBar->hide();
 	connect(m_FileLocationButton, SIGNAL(pressed()), this, SLOT(openFile()));
 	connect(m_deleteButton, SIGNAL(pressed()), this, SLOT(deleteFile()));
-	connect(this, SIGNAL(toUplaodFail()), this, SLOT(uplaodFail()));
+	
 }
 
 FileItem::~FileItem()
@@ -115,7 +128,7 @@ void FileItem::upload()
 	}
 	else{
 		//upload fail
-		emit(toUplaodFail(filePath));
+		emit(toUploadFail(filePath));
 	}
 
 }
@@ -137,8 +150,23 @@ void FileItem::openFile(){
 void FileItem::deleteFile(){
 	emit(toDeleteFile(filePath));
 }
-
-void FileItem::uplaodFail( )
+void FileItem::onTaskBoxContextMenuEvent()
 {
+	QAction *pEven = qobject_cast<QAction *>(this->sender());
 
+	//获取发送信息类型 1:新建任务 
+	int iType = pEven->data().toInt();
+
+	switch (iType)
+	{
+	case 1:
+		upload();
+		break;
+	default:
+		break;
+	}
+}
+
+void FileItem::contextMenuEvent(QContextMenuEvent *event){
+	pMenu->exec(cursor().pos());
 }

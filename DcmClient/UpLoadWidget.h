@@ -13,6 +13,7 @@ public:
 public slots:
 	void upLoading();
 	void upLoaded();
+	void uploadFail(QString);
 	void addFile(QString);
 	void addUploadedFile(QString);
 	void clearFile();

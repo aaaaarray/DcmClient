@@ -4,6 +4,7 @@
 #include <qpushbutton.h>
 #include <qlabel.h>
 #include <QProgressBar>
+#include <QContextMenuEvent>
 enum UPLOADSTATUS
 {
 	UPLOADING,
@@ -21,6 +22,7 @@ public:
 	QString getFilehash();
 protected:
 	virtual void paintEvent(QPaintEvent *event);
+	virtual void contextMenuEvent(QContextMenuEvent *event);
 private:
 	QLabel *m_typeLabel;//文件格式缩略图
 	QLabel *m_fileNameLabel;//文件名
@@ -29,14 +31,16 @@ private:
 	QLabel *m_progressLabel;//显示进度状态
 	QLabel *m_statusLabel;//显示状态或者上传速度
 	QProgressBar *m_progressBar;//上传进度条	
+	QMenu *pMenu;
 	QString filePath;
 	
 	QString  hashValue;
+	UPLOADSTATUS m_status;
 signals:
 	void toDeleteFile(QString filePath);
-	void toUplaodFail(QString filePath);
+	void toUploadFail(QString);
 private slots:
 	void openFile();
 	void deleteFile();
-	void uplaodFail();
+	void onTaskBoxContextMenuEvent();
 };
