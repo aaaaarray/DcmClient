@@ -27,7 +27,7 @@ DcmClient::DcmClient(QWidget *parent)
 
 	systray = new QSystemTrayIcon(this);
 	systray->setToolTip(LoadLanguageString("menu", "title"));
-	systray->setIcon(QIcon("Resources/Dcmclient.ico"));
+	systray->setIcon(QIcon(g_strResPath+"DcmClient.ico"));
 	systray->setVisible(true);
 	QMenu *traymenu = new QMenu(this);
 	action_detils = new QAction(LoadLanguageString("menu", "detils"), traymenu);

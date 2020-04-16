@@ -9,6 +9,8 @@ GeneratedFiles
 lib
 bin/Debug
 *.dll
+!msvcr120.dll
+!msvcp120.dll
 Debug
 packages
 packages.config
