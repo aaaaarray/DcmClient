@@ -7,8 +7,8 @@
 #include <QContextMenuEvent>
 enum UPLOADSTATUS
 {
-	UPLOADING,
-	UPLOADED,
+	UPLOADING = 0,
+	UPLOADED = 1,
 	UPLOADFAIL
 };
 class FileItem : public QWidget

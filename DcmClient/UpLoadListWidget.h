@@ -14,12 +14,12 @@ public:
 	void addFile(QString file, UPLOADSTATUS status);
 	void clearFile();
 signals:
-	void toAddUploadedFile(QString);
-	void toAddUploadFail(QString);
-private slots:
-void deleteUploadingFile(QString filePath);
-void deleteUploadedFile(QString filePath);
-void uploadFail(QString);
+	//void toAddUploadedFile(QString);
+	//void toAddUploadFail(QString);
+public slots:
+	void deleteUploadingFile(QString filePath);
+	void deleteUploadedFile(QString filePath);
+	void uploadFail(QString);
 private:
 	QListWidget * m_listFileWidget;
 };

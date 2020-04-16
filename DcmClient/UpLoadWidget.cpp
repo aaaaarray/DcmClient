@@ -10,8 +10,10 @@ UpLoadWidget::UpLoadWidget(QWidget *parent)
 
 	pushbuttonUpLoading = new QPushButton(this);
 	pushbuttonUpLoaded = new QPushButton(this);
+	m_UploadFileThread = new UploadFileThread(this, this);
 	connect(pushbuttonUpLoading, SIGNAL(pressed()), this, SLOT(upLoading()));
 	connect(pushbuttonUpLoaded, SIGNAL(pressed()), this, SLOT(upLoaded()));
+	connect(this, SIGNAL(toUpdateUploadStatus(QString, int)), this, SLOT(updateUploadStatus(QString, int)));
 	pushbuttonUpLoading->setGeometry(100, 0, 30, 30);
 	pushbuttonUpLoaded->setGeometry(200, 0, 30, 30);
 	pushbuttonUpLoading->setToolTip(LoadLanguageString("upload", "uploading"));
@@ -21,7 +23,7 @@ UpLoadWidget::UpLoadWidget(QWidget *parent)
 	m_UpLoadedListWidget = new UpLoadListWidget(this, UPLOADED);
 	m_UpLoadingListWidget->setGeometry(0, 30, 800, 570);
 	m_UpLoadedListWidget->setGeometry(0, 30, 800, 570);
-	connect(m_UpLoadingListWidget, SIGNAL(toAddUploadedFile(QString)), this, SLOT(addUploadedFile(QString)));
+	//connect(m_UpLoadingListWidget, SIGNAL(toAddUploadedFile(QString)), this, SLOT(addUploadedFile(QString)));
 	showUploading(true);
 }
 
@@ -71,16 +73,31 @@ void UpLoadWidget::upLoaded()
 	showUploading(false);
 }
 
-void UpLoadWidget::uploadFail(QString file)
-{
-	m_UpLoadingListWidget->addFile(file, UPLOADFAIL);
-}
+//void UpLoadWidget::uploadFail(QString file)
+//{
+//	m_UpLoadingListWidget->addFile(file, UPLOADFAIL);
+//}
 
 void UpLoadWidget::addFile(QString file){
 	m_UpLoadingListWidget->addFile(file, UPLOADING);
+	m_UploadFileThread->addFile(file);
 }
 
-void UpLoadWidget::addUploadedFile(QString file)
+//void UpLoadWidget::addUploadedFile(QString file)
+//{
+//	m_UpLoadedListWidget->addFile(file, UPLOADED);
+//}
+void UpLoadWidget::onUpdateUploadStatus(QString file, int status)
 {
-	m_UpLoadedListWidget->addFile(file, UPLOADED);
+	emit(toUpdateUploadStatus(file, 1));
+}
+void UpLoadWidget::updateUploadStatus(QString file, int status){
+	qDebug() <<"UpLoadWidget::updateUploadStatus -> "<< file << "" << status;
+	if (status == UPLOADED){
+		m_UpLoadingListWidget->deleteUploadingFile(file);
+		m_UpLoadedListWidget->addFile(file, UPLOADED);
+	}
+	else if (status == UPLOADFAIL){
+
+	}
 }

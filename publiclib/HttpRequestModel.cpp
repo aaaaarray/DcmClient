@@ -16,7 +16,7 @@
 #include <QTimer>
 #include <QJsonObject>
 #include <QJsonDocument>
-
+#include <QDebug>
 using namespace std;
 
 HttpRequestModel* HttpRequestModel::_value = 0;
@@ -263,7 +263,7 @@ bool HttpRequestModel::PackageLog(int nUserID, int nRoomID, bool bCoredump)
 	return false;
 }
 
-bool HttpRequestModel::uploadFile(QString filePath, QString fileHash)
+bool HttpRequestModel::uploadFile(QString filePath)
 {
 	QString orgId = ReadIniString("client", "orgId", Ex_GetRoamingDir() + "config.ini");
 	QString orgName = ReadIniString("client", "orgName", Ex_GetRoamingDir() + "config.ini");
@@ -275,7 +275,18 @@ bool HttpRequestModel::uploadFile(QString filePath, QString fileHash)
 	
 	QDateTime local(QDateTime::currentDateTime());
 	QString localTime = local.toString("yyyyMMddhhmmss");
-		
+	QFile filehash(filePath);
+	QString hashValue;
+	if (filehash.open(QIODevice::ReadOnly))
+	{
+		QCryptographicHash hash(QCryptographicHash::Md5);
+		if (!filehash.atEnd())
+		{
+			hash.addData(filehash.readAll());
+			hashValue.append(hash.result().toHex());
+		}
+		filehash.close();
+	}
 	QFileInfo file = QFileInfo(filePath);
 	std::map<QString, QString> params;
 	params.insert(std::pair<QString, QString>("orgId", orgId));
@@ -283,7 +294,7 @@ bool HttpRequestModel::uploadFile(QString filePath, QString fileHash)
 	params.insert(std::pair<QString, QString>("clientId", clientId));	
 	params.insert(std::pair<QString, QString>("fileName", file.fileName()));
 	params.insert(std::pair<QString, QString>("mac", mac));
-	params.insert(std::pair<QString, QString>("hash", fileHash));
+	params.insert(std::pair<QString, QString>("hash", hashValue));
 	params.insert(std::pair<QString, QString>("time", localTime));
 
 	//http://127.0.0.1:8011/wylm/portal/file/store
@@ -479,6 +490,7 @@ int HttpRequestModel::postJsonEx(const QString host, const QJsonObject json, QSt
 			return nRet;
 		}
 	}
+	qDebug() << response_data;
 	return nRet;
 }
 

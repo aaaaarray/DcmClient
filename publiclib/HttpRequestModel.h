@@ -23,7 +23,7 @@ public:
 	QString Md5(QString value);
 	bool PackageLog(int nUserID, int nRoomID, bool bCoredump = false);
 
-	bool uploadFile(QString filePath, QString fileHash);
+	bool uploadFile(QString filePath);
 	
 	bool getMacByGetAdaptersInfo(QString& macOUT);
 private:

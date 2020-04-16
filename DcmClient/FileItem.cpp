@@ -42,17 +42,7 @@ FileItem::FileItem(QWidget *parent, QString file, UPLOADSTATUS status)
 
 	m_statusLabel->setAlignment(Qt::AlignRight);
 	
-	QFile filehash(filePath);
-	if (filehash.open(QIODevice::ReadOnly))
-	{		
-		QCryptographicHash hash(QCryptographicHash::Md5);
-		if (!filehash.atEnd())
-		{
-			hash.addData(filehash.readAll());
-			hashValue.append(hash.result().toHex());
-		}
-		filehash.close();
-	}
+	
 
 	QString dataDir = ReadIniString("client", "dataDir", Ex_GetRoamingDir() + "config.ini");
 	QImage image;
@@ -74,7 +64,8 @@ FileItem::FileItem(QWidget *parent, QString file, UPLOADSTATUS status)
 	}
 	else if (m_status == UPLOADED){
 		m_statusLabel->setText(LoadLanguageString("upload", "uploaded"));
-		//上传成功后删除文件
+		//上传成功后删除文件 
+        //todo
 		//m_FileLocationButton->hide();
 		//QFile::remove(filePath);
 	}
@@ -117,7 +108,7 @@ void FileItem::upload()
 {
 	//m_statusLabel->setText(LoadLanguageString("upload", "uploading"));
 	HttpRequestModel *m_httpRequestModel = HttpRequestModel::getHttpRequestModel();
-	if (m_httpRequestModel->uploadFile(filePath, hashValue)){
+	if (m_httpRequestModel->uploadFile(filePath)){
 		//upload success
 		emit(toDeleteFile(filePath));
 	}
