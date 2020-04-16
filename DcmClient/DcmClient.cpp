@@ -12,7 +12,7 @@
 #include <Windows.h>
 #include "IniEx.h"
 #include "DirFileEx.h"
-
+#include "def.h"
 DcmClient::DcmClient(QWidget *parent)
 	: QWidget(parent)
 {
@@ -27,21 +27,17 @@ DcmClient::DcmClient(QWidget *parent)
 
 	systray = new QSystemTrayIcon(this);
 	systray->setToolTip(LoadLanguageString("menu", "title"));
-	systray->setIcon(QIcon("icon.png"));
+	systray->setIcon(QIcon("Resources/Dcmclient.ico"));
 	systray->setVisible(true);
 	QMenu *traymenu = new QMenu(this);
 	action_detils = new QAction(LoadLanguageString("menu", "detils"), traymenu);
-	QIcon icon = QApplication::style()->standardIcon(QStyle::SP_ComputerIcon);
-	action_detils->setIcon(icon);
+	action_detils->setIcon(QIcon(g_strResPath + "detils.png"));
 	action_setting = new QAction(LoadLanguageString("menu", "setting"), traymenu);
-	icon = QApplication::style()->standardIcon(QStyle::SP_DriveNetIcon);
-	action_setting->setIcon(icon);
+	action_setting->setIcon(QIcon(g_strResPath+"setting.png"));
 	action_about = new QAction(LoadLanguageString("menu", "about"), traymenu);
-	icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation);
-	action_about->setIcon(icon);
+	action_about->setIcon(QIcon(g_strResPath + "about.png"));
 	action_quit = new QAction(LoadLanguageString("menu", "quit"), traymenu);
-	icon = QApplication::style()->standardIcon(QStyle::SP_DialogCloseButton);
-	action_quit->setIcon(icon);
+	action_quit->setIcon(QIcon(g_strResPath + "quit.png"));
 	traymenu->addAction(action_detils);
 	traymenu->addAction(action_setting);
 	traymenu->addAction(action_about);
@@ -98,8 +94,8 @@ void DcmClient::showSetting()
 }
 void DcmClient::about()
 {
-	QMessageBox mb(QMessageBox::NoIcon, "about", "ggg");
-	mb.setIconPixmap(QPixmap(":/icon.png"));
+	QMessageBox mb(QMessageBox::NoIcon, LoadLanguageString("menu", "about"), LoadLanguageString("about", "detils"));
+	//mb.setIconPixmap(QPixmap(":/icon.png"));
 	mb.exec();
 	//QMessageBox::information(this, "Title", "Content");
 
@@ -126,6 +122,7 @@ void DcmClient::setFileSystemWatcher()
 		}
 		m_WatcherFileThread = new WatcherFileThread(this);
 		connect(m_WatcherFileThread, SIGNAL(toAddUploadingFile(QString)), upLoadWidget, SLOT(addFile(QString)));
+		upLoadWidget->clearFile();
 		m_WatcherFileThread->setWatchDir(dataDir);
 		m_WatcherFileThread->start();
 	}

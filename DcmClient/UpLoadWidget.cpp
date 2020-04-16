@@ -57,6 +57,12 @@ void UpLoadWidget::showUploading(bool show)
 	}
 }
 
+void UpLoadWidget::clearFile()
+{
+	m_UpLoadingListWidget->clearFile();
+	m_UpLoadedListWidget->clearFile();
+}
+
 void UpLoadWidget::upLoading(){
 	showUploading(true);
 }

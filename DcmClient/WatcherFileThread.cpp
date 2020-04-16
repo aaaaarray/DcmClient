@@ -85,7 +85,7 @@ void WatcherFileThread::WatchDirectories(HANDLE hCompPort)
 				{
 				case FILE_ACTION_ADDED:		
 					qDebug() << QString::fromWCharArray(wcFileName) << " add";
-					emit(toAddUploadingFile(watchDir + QString::fromWCharArray(wcFileName)));
+					emit(toAddUploadingFile(watchDir +"/"+ QString::fromWCharArray(wcFileName)));
 					break;
 				case FILE_ACTION_REMOVED:				
 					break;

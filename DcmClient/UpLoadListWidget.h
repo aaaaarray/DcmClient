@@ -12,10 +12,12 @@ public:
 	UpLoadListWidget(QWidget *parent, UPLOADSTATUS status);
 	~UpLoadListWidget();
 	void addFile(QString file, UPLOADSTATUS status);
+	void clearFile();
 signals:
 	void toAddUploadedFile(QString);
 private slots:
-	void deleteFile(QString filePath);
+void deleteUploadingFile(QString filePath);
+void deleteUploadedFile(QString filePath);
 
 private:
 	QListWidget * m_listFileWidget;

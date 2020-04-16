@@ -33,8 +33,10 @@ private:
 	
 	QString  hashValue;
 signals:
-	void toDeleteFile(QString hash);
+	void toDeleteFile(QString filePath);
+	void toUplaodFail(QString filePath);
 private slots:
 	void openFile();
 	void deleteFile();
+	void uplaodFail();
 };

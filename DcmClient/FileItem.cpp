@@ -75,6 +75,7 @@ FileItem::FileItem(QWidget *parent, QString file, UPLOADSTATUS status)
 	m_progressBar->hide();
 	connect(m_FileLocationButton, SIGNAL(pressed()), this, SLOT(openFile()));
 	connect(m_deleteButton, SIGNAL(pressed()), this, SLOT(deleteFile()));
+	connect(this, SIGNAL(toUplaodFail()), this, SLOT(uplaodFail()));
 }
 
 FileItem::~FileItem()
@@ -114,6 +115,7 @@ void FileItem::upload()
 	}
 	else{
 		//upload fail
+		emit(toUplaodFail(filePath));
 	}
 
 }
@@ -133,5 +135,10 @@ void FileItem::openFile(){
 	
 }
 void FileItem::deleteFile(){
+	emit(toDeleteFile(filePath));
+}
+
+void FileItem::uplaodFail( )
+{
 
 }

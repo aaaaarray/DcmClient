@@ -15,6 +15,7 @@ public slots:
 	void upLoaded();
 	void addFile(QString);
 	void addUploadedFile(QString);
+	void clearFile();
 private:
 	QPushButton *pushbuttonUpLoading;
 	QPushButton *pushbuttonUpLoaded;
