@@ -15,6 +15,7 @@
 FileItem::FileItem(QWidget *parent, QString file, UPLOADSTATUS status)
 	: QWidget(parent)
 	, m_status(status)
+	, m_contextMenu(NULL)
 {
 	filePath = file;
 	QPalette palette(this->palette());
@@ -68,19 +69,22 @@ FileItem::FileItem(QWidget *parent, QString file, UPLOADSTATUS status)
 
 	QFileInfo info(filePath);
 	m_progressLabel->setText(LoadLanguageString("upload", "tip") + QString::number(info.size()) + " Bytes");
-	if (status == UPLOADING){
+	if (m_status == UPLOADING){
 		m_statusLabel->setText(LoadLanguageString("upload", "upload"));
 	}
-	else if (status == UPLOADED){
+	else if (m_status == UPLOADED){
 		m_statusLabel->setText(LoadLanguageString("upload", "uploaded"));
 	}
 	else{
 		m_statusLabel->setText(LoadLanguageString("upload", "fail"));
-		pMenu = new QMenu(this);
+		m_contextMenu = new QMenu(this);
 
 		QAction *reUpload = new QAction(LoadLanguageString("upload", "reUpload"), this);
 		reUpload->setData(1);
-		pMenu->addAction(reUpload);
+		m_contextMenu->addAction(reUpload);
+		m_contextMenu->setStyleSheet("QMenu{background-color: rgb(238,242,241);border: none;}"
+			"QMenu::item{background-color: rgb(238,242,241);color: rgb(0, 0, 0);}"
+			"QMenu::item:selected{background-color: rgb(238,242,241);color: rgb(0, 0, 0);}");
 		connect(reUpload, SIGNAL(triggered()), this, SLOT(onTaskBoxContextMenuEvent()));
 		
 	}
@@ -168,5 +172,7 @@ void FileItem::onTaskBoxContextMenuEvent()
 }
 
 void FileItem::contextMenuEvent(QContextMenuEvent *event){
-	pMenu->exec(cursor().pos());
+	if (m_status == UPLOADFAIL&&m_contextMenu != NULL){
+		m_contextMenu->exec(cursor().pos());
+	}
 }

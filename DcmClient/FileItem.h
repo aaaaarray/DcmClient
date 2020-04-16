@@ -31,7 +31,7 @@ private:
 	QLabel *m_progressLabel;//显示进度状态
 	QLabel *m_statusLabel;//显示状态或者上传速度
 	QProgressBar *m_progressBar;//上传进度条	
-	QMenu *pMenu;
+	QMenu *m_contextMenu;
 	QString filePath;
 	
 	QString  hashValue;
