@@ -107,7 +107,7 @@ void log_log(int level, const char *func, int line, const char *fmt, ...) {
   }
   /* Log to console */
 #ifdef QT_DEBUG
-  if (L.console) {
+  {
 	  QString szLogText;
 	  va_list args;
 	  szLogText = QString("%1 %2 %3 %4 ===> ").arg(current_date).arg(level_names[level]).arg(func).arg(line);

@@ -18,8 +18,6 @@ class FileItem : public QWidget
 public:
 	FileItem(QWidget *parent, QString file, UPLOADSTATUS status);
 	~FileItem();
-	void upload();
-	QString getFilehash();
 protected:
 	virtual void paintEvent(QPaintEvent *event);
 	virtual void contextMenuEvent(QContextMenuEvent *event);
@@ -33,12 +31,11 @@ private:
 	QProgressBar *m_progressBar;//上传进度条	
 	QMenu *m_contextMenu;
 	QString filePath;
-	
-	QString  hashValue;
+
 	UPLOADSTATUS m_status;
 signals:
 	void toDeleteFile(QString filePath);
-	void toUploadFail(QString);
+	void toReUpload(QString);
 private slots:
 	void openFile();
 	void deleteFile();

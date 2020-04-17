@@ -18,11 +18,10 @@ signals:
 public slots:
 	void upLoading();
 	void upLoaded();
-	//void uploadFail(QString);
 	void addFile(QString);
-	//void addUploadedFile(QString);
 	void clearFile();
 	void updateUploadStatus(QString, int);
+	void reUploadingFile(QString filePath);
 private:
 	QPushButton *pushbuttonUpLoading;
 	QPushButton *pushbuttonUpLoaded;

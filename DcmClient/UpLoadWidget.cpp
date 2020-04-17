@@ -73,23 +73,14 @@ void UpLoadWidget::upLoaded()
 	showUploading(false);
 }
 
-//void UpLoadWidget::uploadFail(QString file)
-//{
-//	m_UpLoadingListWidget->addFile(file, UPLOADFAIL);
-//}
-
 void UpLoadWidget::addFile(QString file){
 	m_UpLoadingListWidget->addFile(file, UPLOADING);
 	m_UploadFileThread->addFile(file);
 }
 
-//void UpLoadWidget::addUploadedFile(QString file)
-//{
-//	m_UpLoadedListWidget->addFile(file, UPLOADED);
-//}
 void UpLoadWidget::onUpdateUploadStatus(QString file, int status)
 {
-	emit(toUpdateUploadStatus(file, 1));
+	emit(toUpdateUploadStatus(file, status));
 }
 void UpLoadWidget::updateUploadStatus(QString file, int status){
 	qDebug() <<"UpLoadWidget::updateUploadStatus -> "<< file << "" << status;
@@ -98,6 +89,14 @@ void UpLoadWidget::updateUploadStatus(QString file, int status){
 		m_UpLoadedListWidget->addFile(file, UPLOADED);
 	}
 	else if (status == UPLOADFAIL){
-
+		m_UpLoadingListWidget->deleteUploadingFile(file);
+		m_UpLoadingListWidget->addFile(file, UPLOADFAIL);
 	}
+}
+
+void UpLoadWidget::reUploadingFile(QString filePath)
+{
+	m_UpLoadingListWidget->deleteUploadingFile(filePath);
+	//m_UpLoadingListWidget->addFile(filePath, UPLOADING);
+	addFile(filePath);
 }

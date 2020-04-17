@@ -104,25 +104,6 @@ void FileItem::paintEvent(QPaintEvent *event)
 	painter.drawLine(80, 1, 80, 80);
 }
 
-void FileItem::upload()
-{
-	//m_statusLabel->setText(LoadLanguageString("upload", "uploading"));
-	HttpRequestModel *m_httpRequestModel = HttpRequestModel::getHttpRequestModel();
-	if (m_httpRequestModel->uploadFile(filePath)){
-		//upload success
-		emit(toDeleteFile(filePath));
-	}
-	else{
-		//upload fail
-		emit(toUploadFail(filePath));
-	}
-}
-
-QString FileItem::getFilehash()
-{
-	return hashValue;
-}
-
 void FileItem::openFile(){
 	QProcess process;
 	QString  str = filePath;
@@ -144,7 +125,8 @@ void FileItem::onTaskBoxContextMenuEvent()
 	switch (iType)
 	{
 	case 1:
-		upload();
+		//todo 
+		emit(toReUpload(filePath));
 		break;
 	default:
 		break;

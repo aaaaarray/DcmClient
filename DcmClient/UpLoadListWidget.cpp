@@ -68,33 +68,34 @@ void UpLoadListWidget::addFile(QString file, UPLOADSTATUS status)
 	m_listFileWidget->setItemWidget(item, fileitem);
 	m_listFileWidget->show();
 	connect(fileitem, SIGNAL(toDeleteFile(QString)), this, SLOT(deleteUploadingFile(QString)));
+	connect(fileitem, SIGNAL(toReUpload(QString)), this->parent(), SLOT(reUploadingFile(QString)));
 }
 
 void UpLoadListWidget::deleteUploadingFile(QString filePath)
 {
 	int row = 0;
-	QString line;
 	while (row<(m_listFileWidget->count()))
 	{
 		QString text= m_listFileWidget->item(row)->text();
-		if (text == filePath){
+		if (text == filePath)
+		{
 			m_listFileWidget->takeItem(row);
-			//emit(toAddUploadedFile(filePath));
+			break;
 		}
-		
 		row++;
 	}
 }
 
+
 void UpLoadListWidget::deleteUploadedFile(QString filePath)
 {
 	int row = 0;
-	QString line;
 	while (row<(m_listFileWidget->count()))
 	{
 		QString text = m_listFileWidget->item(row)->text();
 		if (text == filePath){
 			m_listFileWidget->takeItem(row);
+			break;
 		}
 		row++;
 	}
@@ -102,12 +103,12 @@ void UpLoadListWidget::deleteUploadedFile(QString filePath)
 void UpLoadListWidget::uploadFail(QString filePath)
 {
 	int row = 0;
-	QString line;
 	while (row<(m_listFileWidget->count()))
 	{
 		QString text = m_listFileWidget->item(row)->text();
 		if (text == filePath){
 			m_listFileWidget->takeItem(row);
+			break;
 		}
 		row++;
 	}
