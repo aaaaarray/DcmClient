@@ -14,3 +14,4 @@ PUBLICLIB_EXPORT bool DeleteDir(const QString &dirName);
 PUBLICLIB_EXPORT const QString Ex_GetTempDir();
 PUBLICLIB_EXPORT const QString Ex_GetRoamingDir();
 PUBLICLIB_EXPORT bool copyFileToPath(QString sourceDir, QString toDir, bool coverFileIfExist = true);
+PUBLICLIB_EXPORT bool moveFileToPath(QString sourceDir, QString toDir, bool coverFileIfExist = true);

@@ -13,7 +13,7 @@ SettingWidget::SettingWidget(QWidget *parent)
 	: QWidget(parent)
 {
 	this->setWindowTitle(LoadLanguageString("setting", "title"));
-	setFixedSize(500, 400);
+	setFixedSize(500, 440);
 	labelOrgId = new QLabel(this);
 	lineeditOrgId = new QLineEdit(this);
 
@@ -28,6 +28,9 @@ SettingWidget::SettingWidget(QWidget *parent)
 	labelBaseDir = new QLabel(this);
 	lineeditBaseDir = new QLineEdit(this);
 	pushbuttonBaseDir = new QPushButton(this);
+
+	labelBackDir = new QLabel(this);
+	lineeditBackDir = new QLineEdit(this);
 
 	pushbuttonCancel = new QPushButton(this);
 	pushbuttonOK = new QPushButton(this);
@@ -57,14 +60,20 @@ SettingWidget::SettingWidget(QWidget *parent)
 	pushbuttonBaseDir->setText(LoadLanguageString("setting", "choseDir"));
 	pushbuttonBaseDir->setGeometry(350, 200, 80, 40);
 
+	labelBackDir->setText(LoadLanguageString("setting", "dataBackDir"));
+	labelBackDir->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+	labelBackDir->setGeometry(20, 260, 100, 40);
+	lineeditBackDir->setGeometry(130, 260, 210, 40);
+	lineeditBackDir->setEnabled(false);
+
 	checkBoxSelfStart->setText(LoadLanguageString("setting", "selfStart"));
-	checkBoxSelfStart->setGeometry(100, 260, 200, 40);
+	checkBoxSelfStart->setGeometry(100, 320, 200, 40);
 
 	pushbuttonCancel->setText(LoadLanguageString("setting", "cancel"));
-	pushbuttonCancel->setGeometry(50, 340, 100, 40);
+	pushbuttonCancel->setGeometry(50, 380, 100, 40);
 
 	pushbuttonOK->setText(LoadLanguageString("setting", "ok"));
-	pushbuttonOK->setGeometry(350, 340, 100, 40);
+	pushbuttonOK->setGeometry(350, 380, 100, 40);
 
 	connect(pushbuttonCancel, SIGNAL(pressed()), this, SLOT(close()));
 	connect(pushbuttonOK, SIGNAL(pressed()), this, SLOT(onOk()));
@@ -74,11 +83,14 @@ SettingWidget::SettingWidget(QWidget *parent)
 	QString orgName = ReadIniString("client", "orgName", Ex_GetRoamingDir() + "config.ini");
 	QString clientId = ReadIniString("client", "clientId", Ex_GetRoamingDir() + "config.ini");
 	QString dataDir = ReadIniString("client", "dataDir", Ex_GetRoamingDir() + "config.ini");
+	QString backDir = ReadIniString("client", "backDir", Ex_GetRoamingDir() + "config.ini");
 	QString autoStart = ReadIniString("client", "autoStart", Ex_GetRoamingDir() + "config.ini");
+
 	lineeditOrgId->setText(orgId);
 	lineeditOrgName->setText(orgName);
 	lineeditClientId->setText(clientId);
 	lineeditBaseDir->setText(dataDir);
+	lineeditBackDir->setText(backDir);
 
 	checkBoxSelfStart->setChecked(autoStart == "1" ? true : false);
 	
@@ -118,8 +130,17 @@ void SettingWidget::onOk()
 		QMessageBox::critical(NULL, LoadLanguageString("error", "critical"), LoadLanguageString("error", "emptyDataDir"), QMessageBox::Yes);
 		return;
 	}
+	if (lineeditBackDir->text() == ""){
+		QMessageBox::critical(NULL, LoadLanguageString("error", "critical"), LoadLanguageString("error", "emptyBackDataDir"), QMessageBox::Yes);
+		return;
+	}
+	if (lineeditBackDir->text() == lineeditBaseDir->text()){
+		QMessageBox::critical(NULL, LoadLanguageString("error", "critical"), LoadLanguageString("error", "DataEqualBackDir"), QMessageBox::Yes);
+		return;
+	}
+	
 	if (!IsDirectoryExist(lineeditBaseDir->text())){
-		QMessageBox::StandardButton result = QMessageBox::information(NULL, LoadLanguageString("setting", "tip"), LoadLanguageString("setting", "dircreate"), QMessageBox::Yes | QMessageBox::No);
+		QMessageBox::StandardButton result = QMessageBox::information(NULL, LoadLanguageString("setting", "tip"), lineeditBaseDir->text() + LoadLanguageString("setting", "dircreate"), QMessageBox::Yes | QMessageBox::No);
 		if (result == QMessageBox::Yes)
 		{
 			if (Ex_CreateDiretory(lineeditBaseDir->text())){
@@ -136,10 +157,30 @@ void SettingWidget::onOk()
 			return;
 		}
 	}
+
+	if (!IsDirectoryExist(lineeditBackDir->text())){
+		QMessageBox::StandardButton result = QMessageBox::information(NULL, LoadLanguageString("setting", "tip"), lineeditBackDir->text() + LoadLanguageString("setting", "dircreate"), QMessageBox::Yes | QMessageBox::No);
+		if (result == QMessageBox::Yes)
+		{
+			if (Ex_CreateDiretory(lineeditBackDir->text())){
+				QMessageBox::information(NULL, LoadLanguageString("setting", "tip"), LoadLanguageString("setting", "dirCreateSucc"), QMessageBox::Yes);
+			}
+			else{
+				QMessageBox::critical(NULL, LoadLanguageString("setting", "tip"), LoadLanguageString("setting", "dirCreateFail"), QMessageBox::Yes);
+				lineeditBackDir->clear();
+				return;
+			}
+		}
+		else{
+			lineeditBackDir->clear();
+			return;
+		}
+	}
 	QString orgId = lineeditOrgId->text();
 	QString orgName = lineeditOrgName->text();
 	QString clientId = lineeditClientId->text();
 	QString dataDir = lineeditBaseDir->text();
+	QString backDir = lineeditBackDir->text();
 	QString api;
 	HttpRequestModel *m_httpRequestModel = HttpRequestModel::getHttpRequestModel();
 
@@ -165,6 +206,7 @@ void SettingWidget::onOk()
 			WriteIniString("client", "clientId", clientId, Ex_GetRoamingDir() + "config.ini");
 		}
 		WriteIniString("client", "dataDir", dataDir, Ex_GetRoamingDir() + "config.ini");
+		WriteIniString("client", "backDir", backDir, Ex_GetRoamingDir() + "config.ini");
 		WriteIniString("client", "api", api, Ex_GetRoamingDir() + "config.ini");
 		QMessageBox::information(NULL, LoadLanguageString("setting", "tip"), LoadLanguageString("setting", "succ"), QMessageBox::Yes);
 
@@ -191,4 +233,5 @@ void SettingWidget::onChoseDir()
 		return;
 	}
 	lineeditBaseDir->setText(srcDirPath);
+	lineeditBackDir->setText(srcDirPath+"_back");
 }

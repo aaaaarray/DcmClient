@@ -131,7 +131,6 @@ int HttpRequestModel::CheckClient(QString orgId, QString orgName, QString dataDi
 	json.insert("time", localTime);
 	QString key = "orgId=" + orgId + "&time=" + localTime;
 	json.insert("key", Md5(key));
-	qDebug() << "------------>   " << QString(QJsonDocument(json).toJson());
 	QString response_data;
 	int ret = postJsonEx("/base/check", json, response_data);
 	if (ret != 0)

@@ -20,7 +20,7 @@ public:
 	~UploadFileThread();
 	void addFile(QString, UPLOADSTATUS status = UPLOADING);
 	QString getFile(UPLOADSTATUS status = UPLOADING);
-
+	void moveFile(QString);
 protected:
 	virtual void run();
 private:

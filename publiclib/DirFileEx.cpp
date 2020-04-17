@@ -190,3 +190,11 @@ bool copyFileToPath(QString sourceDir, QString toDir, bool coverFileIfExist)
 	}
 	return true;
 }
+
+bool moveFileToPath(QString sourceDir, QString toDir, bool coverFileIfExist)
+{
+	copyFileToPath(sourceDir, toDir);
+	QFile file(sourceDir);
+	return file.remove();
+
+}

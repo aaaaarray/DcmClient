@@ -30,6 +30,9 @@ private:
 	QLineEdit *lineeditBaseDir;
 	QPushButton *pushbuttonBaseDir;
 
+	QLabel * labelBackDir;
+	QLineEdit *lineeditBackDir;
+
 	QPushButton *pushbuttonCancel;
 	QPushButton *pushbuttonOK;
 signals:

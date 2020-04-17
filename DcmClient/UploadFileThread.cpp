@@ -1,6 +1,9 @@
 #include "UploadFileThread.h"
 #include "AutoLock.h"
 #include <QDebug>
+#include <QDir>
+#include "IniEx.h"
+#include "DirFileEx.h"
 UploadFileThread::UploadFileThread(QObject *parent, UploadFileThreadEvent *pUploadFileThreadEvent)
 	: QThread(parent)
 	, m_UploadFileThreadEvent(pUploadFileThreadEvent)
@@ -61,6 +64,7 @@ void UploadFileThread::run()
 		}
 		if (m_httpRequestModel->uploadFile(filePath)){
 			m_UploadFileThreadEvent->onUpdateUploadStatus(filePath, 1);
+			moveFile(filePath);
 		}
 		else{
 			m_UploadFileThreadEvent->onUpdateUploadStatus(filePath, 2);
@@ -68,4 +72,16 @@ void UploadFileThread::run()
 
 		}
 	}
+}
+
+void UploadFileThread::moveFile(QString file)
+{
+	QString dataDir = ReadIniString("client", "dataDir", Ex_GetRoamingDir() + "config.ini");
+	QString backDir = ReadIniString("client", "backDir", Ex_GetRoamingDir() + "config.ini");
+	QString target = file;
+	target= target.mid(dataDir.length());
+	qDebug() << "................................................" << target;
+	target = backDir+target;
+	moveFileToPath(file, target);
+	qDebug() << "................................................" << target;
 }
