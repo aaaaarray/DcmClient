@@ -433,7 +433,6 @@ bool HttpRequestModel::getVersion(QString &strVersion, QString& strForcedUpgrade
 int HttpRequestModel::postJson(const QString host, const QJsonObject json, QString& response_data)
 {
 	log_info("host = %s", host.toStdString().c_str());
-	
 	QUrl url(host);
 	QJsonDocument document;
 	document.setObject(json);
@@ -445,6 +444,9 @@ int HttpRequestModel::postJson(const QString host, const QJsonObject json, QStri
 	// ¹¹ÔìÇëÇó
 	QNetworkRequest request;
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+	QSslConfiguration config = QSslConfiguration::defaultConfiguration();
+	config.setProtocol(QSsl::TlsV1_2);
+	request.setSslConfiguration(config);
 	request.setUrl(url);
 	QEventLoop waitLoop;
 	QNetworkAccessManager* connection = new QNetworkAccessManager();
@@ -587,6 +589,9 @@ int HttpRequestModel::postfile(const QString host, std::map<QString, QString> pa
 	timer.setSingleShot(true);
 	QNetworkAccessManager *connection = new QNetworkAccessManager;
 	QNetworkRequest request(QUrl(host.toStdString().c_str()));
+	QSslConfiguration config = QSslConfiguration::defaultConfiguration();
+	config.setProtocol(QSsl::TlsV1_2);
+	request.setSslConfiguration(config);
 	QNetworkReply *reply = connection->post(request, multiPart);
 	QEventLoop waitLoop;
 	QObject::connect(&timer, SIGNAL(timeout()), &waitLoop, SLOT(quit()));
@@ -595,7 +600,7 @@ int HttpRequestModel::postfile(const QString host, std::map<QString, QString> pa
 	waitLoop.exec();
 	int errorCode = reply->error();
 	if (errorCode != 0) {
-		log_error("error %d %s", errorCode, reply->errorString().toStdString().c_str());
+		qDebug()<<"error = "<< errorCode<<",msg = "<<reply->errorString();
 	}
 	else {
 		response_data = reply->readAll();
