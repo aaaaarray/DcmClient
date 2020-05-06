@@ -1,7 +1,7 @@
 #include "UpLoadWidget.h"
 #include "IniEx.h"
 #include "def.h"
-#include <QDebug>
+#include "log.h"
 UpLoadWidget::UpLoadWidget(QWidget *parent)
 	: QWidget(parent)
 {
@@ -83,7 +83,7 @@ void UpLoadWidget::onUpdateUploadStatus(QString file, int status)
 	emit(toUpdateUploadStatus(file, status));
 }
 void UpLoadWidget::updateUploadStatus(QString file, int status){
-	qDebug() <<"UpLoadWidget::updateUploadStatus -> "<< file << "" << status;
+	log_info("UpLoadWidget::updateUploadStatus %s %d ",file.toStdString().c_str() , status);
 	if (status == UPLOADED){
 		m_UpLoadingListWidget->deleteUploadingFile(file);
 		m_UpLoadedListWidget->addFile(file, UPLOADED);

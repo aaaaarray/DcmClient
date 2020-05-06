@@ -1,6 +1,6 @@
 ﻿#include "WatcherFileThread.h"
+#include "log.h"
 #include <QDir.h>
-#include <QDebug.h>
 #define BUFFER_SIZE 2048
 
 #define FILE_NAME_LEN 1024
@@ -84,7 +84,7 @@ void WatcherFileThread::WatchDirectories(HANDLE hCompPort)
 				switch (fni->Action)
 				{
 				case FILE_ACTION_ADDED:		
-					qDebug() << QString::fromWCharArray(wcFileName) << " add";
+					log_info("%s add", QString::fromWCharArray(wcFileName).toStdString().c_str());
 					emit(toAddUploadingFile(watchDir +"/"+ QString::fromWCharArray(wcFileName)));
 					break;
 				case FILE_ACTION_REMOVED:				
@@ -99,7 +99,7 @@ void WatcherFileThread::WatchDirectories(HANDLE hCompPort)
 					//qDebug() << "file name changed - new name: ";
 					break;
 					default: 
-						qDebug() << "unknown event: ";
+						log_info("unknown event: ");
 					break;
 				}
 				fni = (PFILE_NOTIFY_INFORMATION)((LPBYTE)fni + cbOffset);

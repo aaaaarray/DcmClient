@@ -3,7 +3,6 @@
 #include <QDesktopWidget>
 #include <QFileDialog>
 #include <QMessageBox>
-#include <QDebug>
 #include "IniEx.h"
 #include "DirFileEx.h"
 #include "HttpRequestModel.h"
@@ -86,6 +85,10 @@ SettingWidget::SettingWidget(QWidget *parent)
 	{
 		orgId = ReadIniString("org", "orgId", m_gRunConfig);
 		orgName = ReadIniString("org", "orgName", m_gRunConfig);
+		if (orgId == "" || orgName == ""){
+			QMessageBox::critical(NULL, LoadLanguageString("error", "critical"), LoadLanguageString("error", "errorsetting"), QMessageBox::Yes);
+			exit(0);
+		}
 		WriteIniString("client", "orgId", orgId, Ex_GetRoamingDir() + "config.ini");
 		WriteIniString("client", "orgName", orgName, Ex_GetRoamingDir() + "config.ini");
 	}

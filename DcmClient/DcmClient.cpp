@@ -2,7 +2,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QDateTime>
-#include <QDebug>
+#include "log.h"
 #include <QJsonParseError>
 #include <QMenu>
 #include <QMessageBox>
@@ -66,7 +66,6 @@ void DcmClient::closeEvent(QCloseEvent *event)
 
 void DcmClient::trayActivated(QSystemTrayIcon::ActivationReason reason)
 {
-	qDebug() << reason;
 	switch (reason) {
 	case QSystemTrayIcon::Trigger:
 	{
@@ -124,10 +123,10 @@ void DcmClient::setFileSystemWatcher()
 }
 
 void DcmClient::fileChanged(QString path){
-	qDebug() << __FUNCTION__ << "fileChanged path = " << path;
+
 }
 
 void DcmClient::dirChanged(QString path)
 {
-	qDebug() << __FUNCTION__ << "directoryChanged path = " << path;
+
 }

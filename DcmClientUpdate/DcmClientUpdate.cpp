@@ -8,7 +8,7 @@
 #include <Windows.h>
 #include <shellapi.h>
 #pragma comment(lib,"Shell32.lib")
-#include <qdebug.h>
+#include "log.h"
 DcmClientUpdate::DcmClientUpdate(QString strVersion, QString strFileUrl, QWidget *parent)
 	: QWidget(parent)
 	, m_strServerVersion(strVersion)
@@ -28,14 +28,14 @@ void DcmClientUpdate::ProcessCommand()
 			QString strForcedUpgradeVersion;
 			if (!m_httpRequestModel->getVersion(m_strServerVersion, strForcedUpgradeVersion, m_strFileUrl))
 			{
-				qDebug() << "Get New ClientVersionInfo fail";
+				log_info( "Get New ClientVersionInfo fail");
 				exit(0);
 			}
 		}
 
 		m_strFileUrl = m_strFileUrl.left(m_strFileUrl.length() - 3);
 		m_strFileUrl += "exe";
-		qDebug() << "Get New ClientVersionInfo success,address=" << m_strFileUrl;
+		log_info("Get New ClientVersionInfo success,address= %s", m_strFileUrl.toStdString().c_str());
 		m_strUpdatePath = Ex_GetTempDir() + "update/";
 		if (CheckUpdate(m_strServerVersion))
 		{
@@ -52,7 +52,7 @@ void DcmClientUpdate::ProcessCommand()
 				&& fileInfo.exists()
 				)
 			{
-				qDebug() << strGroupName + ".exe is already download,path= "+ strConfigPathAll;
+				log_info("%s .exe is already download,path=%s ", strGroupName.toStdString().c_str(), strConfigPathAll.toStdString().c_str());
 
 				QString strKill = "taskkill /im " + strGroupName + ".exe /f";
 				ShellExecute(NULL, strKill.toStdWString().c_str(), NULL, NULL, NULL, SW_HIDE);
@@ -61,7 +61,7 @@ void DcmClientUpdate::ProcessCommand()
 			}
 			else
 			{
-				qDebug() << "begin update .......";
+				log_info("begin update .......");
 				DeleteDir(m_strUpdatePath);
 				Ex_CreateDiretory(m_strUpdatePath);
 				QDateTime time = QDateTime::currentDateTime();
@@ -89,7 +89,7 @@ bool DcmClientUpdate::CheckUpdate(QString strVersionRemote)
 	QString strLocalVersion = ReadIniString("Version", "Version", m_gRunConfig);
 	if (strLocalVersion.isEmpty() || strVersionRemote.isEmpty())
 	{
-		qDebug() << "LocalVersion=" + strLocalVersion + ", VersionRemote=" + strVersionRemote;
+		log_info("LocalVersion=%s, VersionRemote=%s", strLocalVersion.toStdWString().c_str(), strVersionRemote.toStdWString().c_str());
 		return false;
 	}
 
@@ -117,7 +117,7 @@ void DcmClientUpdate::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 		return;
 	}
 	m_nOldProcess = nProgress;
-	qDebug() << nProgress;
+	log_info("%d", nProgress);
 }
 
 
@@ -131,16 +131,16 @@ void DcmClientUpdate::httpDownloadFinished(QNetworkReply *reply)
 {
 	QUrl url = reply->url();
 	if (reply->error()) {
-		qDebug() << "Download of " << url.toEncoded().constData() << " failed: "+ reply->errorString();
+		log_info("Download of %s failed:%s ", url.toEncoded().constData(), reply->errorString().toStdString().c_str());
 	}
 	else {
 		if (isHttpRedirect(reply)) {
-			qDebug() << "Download Request was redirected.";
+			log_info("Download Request was redirected.");
 		}
 		else {
 			QString filename = saveFileName(url);
 			if (saveToDisk(filename, reply)) {
-				qDebug() << "Download of " << url.toEncoded().constData() << " succeeded (saved to " + filename + ")";
+				log_info("Download of %s succeeded (saved to %s)", url.toEncoded().constData(), filename.toStdString().c_str());
 			}
 		}
 	}
@@ -172,7 +172,7 @@ bool DcmClientUpdate::saveToDisk(const QString &filename, QIODevice *data)
 	QFile file(filePath);
 	if (!file.open(QIODevice::WriteOnly))
 	{
-		qDebug() << "Could not open " + filePath + " for writing: " << file.errorString();
+		log_info("Could not open %s for writing: %s", filePath.toStdString().c_str(), file.errorString().toStdString().c_str());
 		return false;
 	}
 

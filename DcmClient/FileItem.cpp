@@ -4,7 +4,6 @@
 #include "def.h"
 #include <Windows.h>
 #include <QPainter.h>
-#include <QDebug>
 #include <QCryptographicHash>
 #include <QFile>
 #include <QFileInfo>
@@ -109,7 +108,6 @@ void FileItem::openFile(){
 	QString  str = filePath;
 	str.replace("/", "\\"); // 只能识别 "\"
 	QString cmd = QString("explorer.exe /select,\"%1\"").arg(str);
-	qDebug() << cmd;
 	process.startDetached(cmd);	
 }
 void FileItem::deleteFile(){

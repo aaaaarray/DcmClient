@@ -16,7 +16,6 @@
 #include <QTimer>
 #include <QJsonObject>
 #include <QJsonDocument>
-#include <QDebug>
 using namespace std;
 
 HttpRequestModel* HttpRequestModel::_value = 0;
@@ -299,13 +298,13 @@ bool HttpRequestModel::uploadFile(QString filePath)
 	QString host = m_strHttpApi + "/file/store";
 	QString strSlaveUrl = m_strHttpApi_Back + "/file/store";
 	QString response_data;
-	qDebug() << "host = " << host << "file = " << filePath;
+	log_info("host = %s, file = %s ", host.toStdString().c_str(), filePath.toStdString().c_str());
 	if (postfile(host, params, filePath, file.fileName(), response_data) != 0)
 	{
 		if (postfile(strSlaveUrl, params, filePath, file.fileName(), response_data) != 0)
 			return false;
 	}
-	qDebug() << "restult = " << response_data;
+	log_info("restult = %s", response_data.toStdString().c_str());
 	QJsonParseError json_error;
 	QByteArray bytes = response_data.toUtf8();
 	QJsonDocument parse_doucment = QJsonDocument::fromJson(bytes, &json_error);
@@ -477,7 +476,9 @@ int HttpRequestModel::postJson(const QString host, const QJsonObject json, QStri
 	}
 
 	delete reply;
+	reply = NULL;
 	delete connection;
+	connection = NULL;
 	return errorCode;
 }
 
@@ -492,14 +493,14 @@ int HttpRequestModel::postJsonEx(const QString host, const QJsonObject json, QSt
 			return nRet;
 		}
 	}
-	qDebug() << response_data;
+	log_info(response_data.toStdString().c_str());
 	return nRet;
 }
 
 int HttpRequestModel::post(const QString host, const QString data, QString& response_data)
 {
-	qDebug() << "host = " << host;
-	qDebug() << "request = " << data;
+	log_info("host = %s " , host.toStdString().c_str());
+	log_info("request = %s",data.toStdString().c_str());
 	QTimer timer;
 	timer.setInterval(5000);
 	timer.setSingleShot(true);
@@ -525,7 +526,6 @@ int HttpRequestModel::post(const QString host, const QString data, QString& resp
 		}
 		else {
 			response_data = reply->readAll();
-			qDebug() << "result = " << response_data;
 		}
 	}
 	else
@@ -537,7 +537,9 @@ int HttpRequestModel::post(const QString host, const QString data, QString& resp
 	}
 
 	delete reply;
+	reply = NULL;
 	delete connection;
+	connection = NULL;
 	return errorCode;
 }
 
@@ -562,18 +564,18 @@ int HttpRequestModel::postEx(const QString api, QString data, QString& response_
 
 int HttpRequestModel::postfile(const QString host, std::map<QString, QString> params, QString filepath, QString fileName, QString& response_data, QString strType)
 {
-	qDebug() << "host = " << host;
+log_info( "host = %s" , host.toStdString().c_str());
 	QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
 	//multiPart->setBoundary("----WebKitFormBoundaryCJsAP52jsafp27FY");
 	std::map<QString, QString>::iterator it = params.begin();
-	qDebug() << "上传参数 =    ";
+	log_info("上传参数 =    ");
 	for (it = params.begin(); it != params.end(); ++it)
 	{
 		QHttpPart childPart;
 		childPart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data;name=\"" + it->first + "\""));
 		childPart.setBody(it->second.toLatin1());
 		multiPart->append(childPart);
-		qDebug() << it->first << ":" << it->second;
+		log_info("%s : %s", it->first.toStdString().c_str(), it->second.toStdString().c_str());
 	}
 	QHttpPart filePart;
 	filePart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data;name=\"file\";filename=\"" + fileName.toLatin1() + "\""));
@@ -600,13 +602,15 @@ int HttpRequestModel::postfile(const QString host, std::map<QString, QString> pa
 	waitLoop.exec();
 	int errorCode = reply->error();
 	if (errorCode != 0) {
-		qDebug()<<"error = "<< errorCode<<",msg = "<<reply->errorString();
+		log_info("error = %d,msg = %s ", errorCode, reply->errorString().toStdString().c_str());
 	}
 	else {
 		response_data = reply->readAll();
-		qDebug() << "result = " << response_data;
+		log_info("result = %s", response_data.toStdString().c_str());
 	}
 	delete reply;
+	reply = NULL;
 	delete connection;
+	connection = NULL;
 	return errorCode;
 }

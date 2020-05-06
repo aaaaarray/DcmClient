@@ -1,7 +1,6 @@
 #include "DateUtils.h"
 #include<QDateTime>
 #include<QTimeZone>
-#include<qdebug.h>
 #include<QLocale.h>
 DateUtils::DateUtils()
 {

@@ -1,6 +1,6 @@
 #include "UploadFileThread.h"
 #include "AutoLock.h"
-#include <QDebug>
+
 #include <QDir>
 #include "IniEx.h"
 #include "DirFileEx.h"
@@ -80,8 +80,7 @@ void UploadFileThread::moveFile(QString file)
 	QString backDir = ReadIniString("client", "backDir", Ex_GetRoamingDir() + "config.ini");
 	QString target = file;
 	target= target.mid(dataDir.length());
-	qDebug() << "................................................" << target;
+
 	target = backDir+target;
 	moveFileToPath(file, target);
-	qDebug() << "................................................" << target;
 }

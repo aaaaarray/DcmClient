@@ -1,5 +1,5 @@
 #include "UpLoadListWidget.h"
-#include <QDebug>
+
 UpLoadListWidget::UpLoadListWidget(QWidget *parent, UPLOADSTATUS status)
 	: QWidget(parent)
 {
