@@ -182,7 +182,11 @@ bool copyFileToPath(QString sourceDir, QString toDir, bool coverFileIfExist)
 		if (coverFileIfExist) {
 			createfile->remove(toDir);
 		}
-	}//end if
+	}
+	else
+	{
+		Ex_CreateDiretory(toDir);
+	}
 
 	if (!QFile::copy(sourceDir, toDir))
 	{
