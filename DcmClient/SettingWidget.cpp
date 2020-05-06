@@ -39,12 +39,13 @@ SettingWidget::SettingWidget(QWidget *parent)
 	labelOrgId->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	labelOrgId->setGeometry(20, 20, 100, 40);
 	lineeditOrgId->setGeometry(130, 20, 300, 40);
-
+	lineeditOrgId->setEnabled(false);
 
 	labelOrgName->setText(LoadLanguageString("setting", "orgName"));
 	labelOrgName->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	labelOrgName->setGeometry(20, 80, 100, 40);
 	lineeditOrgName->setGeometry(130, 80, 300, 40);
+	lineeditOrgName->setEnabled(false);
 
 
 	labelClientId->setText(LoadLanguageString("setting", "clientId"));
@@ -77,10 +78,17 @@ SettingWidget::SettingWidget(QWidget *parent)
 
 	connect(pushbuttonCancel, SIGNAL(pressed()), this, SLOT(close()));
 	connect(pushbuttonOK, SIGNAL(pressed()), this, SLOT(onOk()));
-	connect(pushbuttonBaseDir, SIGNAL(pressed()), this, SLOT(onChoseDir()));
+	connect(pushbuttonBaseDir, SIGNAL(pressed()), this, SLOT(onChooseDir()));
 
-	QString orgId = ReadIniString("client", "orgId", Ex_GetRoamingDir() + "config.ini");
-	QString orgName = ReadIniString("client", "orgName", Ex_GetRoamingDir() + "config.ini");
+	orgId = ReadIniString("client", "orgId", Ex_GetRoamingDir() + "config.ini");
+	orgName = ReadIniString("client", "orgName", Ex_GetRoamingDir() + "config.ini");
+	if (orgId == "" || orgName == "")
+	{
+		orgId = ReadIniString("org", "orgId", m_gRunConfig);
+		orgName = ReadIniString("org", "orgName", m_gRunConfig);
+		WriteIniString("client", "orgId", orgId, Ex_GetRoamingDir() + "config.ini");
+		WriteIniString("client", "orgName", orgName, Ex_GetRoamingDir() + "config.ini");
+	}
 	QString clientId = ReadIniString("client", "clientId", Ex_GetRoamingDir() + "config.ini");
 	QString dataDir = ReadIniString("client", "dataDir", Ex_GetRoamingDir() + "config.ini");
 	QString backDir = ReadIniString("client", "backDir", Ex_GetRoamingDir() + "config.ini");
@@ -92,7 +100,7 @@ SettingWidget::SettingWidget(QWidget *parent)
 	lineeditBaseDir->setText(dataDir);
 	lineeditBackDir->setText(backDir);
 
-	checkBoxSelfStart->setChecked(autoStart == "1" ? true : false);
+	checkBoxSelfStart->setChecked(autoStart == "0" ? false : true);
 	
 
 }
@@ -102,8 +110,6 @@ SettingWidget::~SettingWidget()
 }
 
 void SettingWidget::init(){
-	QString orgId = ReadIniString("client", "orgId", Ex_GetRoamingDir() + "config.ini");
-	QString orgName = ReadIniString("client", "orgName", Ex_GetRoamingDir() + "config.ini");
 	QString clientId = ReadIniString("client", "clientId", Ex_GetRoamingDir() + "config.ini");
 	QString dataDir = ReadIniString("client", "dataDir", Ex_GetRoamingDir() + "config.ini");
 	QString api;
@@ -118,14 +124,14 @@ void SettingWidget::init(){
 
 void SettingWidget::onOk()
 {
-	if (lineeditOrgId->text() == ""){
-		QMessageBox::critical(NULL, LoadLanguageString("error", "critical"), LoadLanguageString("error", "emptyOrgId"), QMessageBox::Yes);
-		return;
-	}
-	if (lineeditOrgName->text() == ""){
-		QMessageBox::critical(NULL, LoadLanguageString("error", "critical"), LoadLanguageString("error", "emptyOrgName"), QMessageBox::Yes);
-		return;
-	}
+	//if (lineeditOrgId->text() == ""){
+	//	QMessageBox::critical(NULL, LoadLanguageString("error", "critical"), LoadLanguageString("error", "emptyOrgId"), QMessageBox::Yes);
+	//	return;
+	//}
+	//if (lineeditOrgName->text() == ""){
+	//	QMessageBox::critical(NULL, LoadLanguageString("error", "critical"), LoadLanguageString("error", "emptyOrgName"), QMessageBox::Yes);
+	//	return;
+	//}
 	if (lineeditBaseDir->text() == ""){
 		QMessageBox::critical(NULL, LoadLanguageString("error", "critical"), LoadLanguageString("error", "emptyDataDir"), QMessageBox::Yes);
 		return;
@@ -176,8 +182,6 @@ void SettingWidget::onOk()
 			return;
 		}
 	}
-	QString orgId = lineeditOrgId->text();
-	QString orgName = lineeditOrgName->text();
 	QString clientId = lineeditClientId->text();
 	QString dataDir = lineeditBaseDir->text();
 	QString backDir = lineeditBackDir->text();
@@ -199,8 +203,8 @@ void SettingWidget::onOk()
 
 	if (m_httpRequestModel->InitClient(orgId, orgName, dataDir, clientId, api) == true)
 	{
-		WriteIniString("client", "orgId", orgId, Ex_GetRoamingDir() + "config.ini");
-		WriteIniString("client", "orgName", orgName, Ex_GetRoamingDir() + "config.ini");
+		/*WriteIniString("client", "orgId", orgId, Ex_GetRoamingDir() + "config.ini");
+		WriteIniString("client", "orgName", orgName, Ex_GetRoamingDir() + "config.ini");*/
 		if (clientId != NULL&&clientId != ""){
 			lineeditClientId->setText(clientId);
 			WriteIniString("client", "clientId", clientId, Ex_GetRoamingDir() + "config.ini");
@@ -224,7 +228,7 @@ void SettingWidget::onOk()
 
 }
 
-void SettingWidget::onChoseDir()
+void SettingWidget::onChooseDir()
 {
 	QString srcDirPath = QFileDialog::getExistingDirectory(this, LoadLanguageString("setting", "choseDir"), "/");
 
