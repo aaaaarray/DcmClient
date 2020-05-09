@@ -21,7 +21,7 @@ DcmClientUpdate::DcmClientUpdate(QString strVersion, QString strFileUrl, QWidget
 void DcmClientUpdate::ProcessCommand()
 {
 	{
-		if (m_strServerVersion.isEmpty() || m_strFileUrl.isEmpty())
+		/*if (m_strServerVersion.isEmpty() || m_strFileUrl.isEmpty())
 		{
 			HttpRequestModel *m_httpRequestModel = HttpRequestModel::getHttpRequestModel();
 			m_httpRequestModel->setApi(NULL);
@@ -31,10 +31,10 @@ void DcmClientUpdate::ProcessCommand()
 				log_info( "Get New ClientVersionInfo fail");
 				exit(0);
 			}
-		}
+		}*/
 
-		m_strFileUrl = m_strFileUrl.left(m_strFileUrl.length() - 3);
-		m_strFileUrl += "exe";
+		//m_strFileUrl = m_strFileUrl.left(m_strFileUrl.length() - 3);
+		//m_strFileUrl += "exe";
 		log_info("Get New ClientVersionInfo success,address= %s", m_strFileUrl.toStdString().c_str());
 		m_strUpdatePath = Ex_GetTempDir() + "update/";
 		if (CheckUpdate(m_strServerVersion))

@@ -14,6 +14,7 @@ public:
 	~SettingWidget();
 	void init();
 private:
+	void checkUpdate(QString clientUrl);
 	QLabel * labelOrgId;
 	QLineEdit * lineeditOrgId;
 

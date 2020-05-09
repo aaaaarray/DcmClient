@@ -115,12 +115,15 @@ SettingWidget::~SettingWidget()
 void SettingWidget::init(){
 	QString clientId = ReadIniString("client", "clientId", Ex_GetRoamingDir() + "config.ini");
 	QString dataDir = ReadIniString("client", "dataDir", Ex_GetRoamingDir() + "config.ini");
-	QString api;
+	QString clientUrl;
 	HttpRequestModel *m_httpRequestModel = HttpRequestModel::getHttpRequestModel();
-	if (m_httpRequestModel->CheckClient(orgId, orgName, dataDir, clientId) == 1)
+	if (m_httpRequestModel->CheckClient(orgId, orgName, dataDir, clientId, clientUrl) == 1)
 	{
 		WriteIniString("client", "clientId", "", Ex_GetRoamingDir() + "config.ini");
 	}
+
+	checkUpdate(clientUrl);
+
 	emit(toStartFileSystemWatcher());
 }
 
@@ -241,4 +244,95 @@ void SettingWidget::onChooseDir()
 	}
 	lineeditBaseDir->setText(srcDirPath);
 	lineeditBackDir->setText(srcDirPath+"_back");
+}
+#include "log.h"
+#include  <windows.h>
+#include <process.h>
+#include <shellapi.h>
+#pragma comment(lib,"Shell32.lib")
+#include <qdesktopservices.h>
+#include "DateUtils.h"
+#include "Util.h"
+void SettingWidget::checkUpdate(QString clientUrl){
+	//clientUrl = "http://106.39.114.85/download/opvideo_setup_v2.3.4.1.exe";
+	QString strRemoteVersion;
+	strRemoteVersion = clientUrl.mid(clientUrl.lastIndexOf("v") + 1);
+	strRemoteVersion = strRemoteVersion.mid(0, strRemoteVersion.lastIndexOf("."));
+	QString strLocalVersion = ReadIniString("Version", "Version", m_gRunConfig);
+		QStringList strLocalVersionlist = strLocalVersion.split(".");
+		QStringList strVersionRemotelist = strRemoteVersion.split(".");
+		for (int i = 0; i < 4; i++)
+		{
+			int r = strVersionRemotelist.at(i).toInt();
+			int l = strLocalVersionlist.at(i).toInt();
+			if (r > l)
+			{;
+				break;
+			}
+			else if (r < l) {
+				return;
+			}
+		}
+		
+	
+		QString strUpdateConfig = Ex_GetTempDir() + "update/config.ini";
+		QString strVersion = ReadIniString("UpDate", "Version", strUpdateConfig);
+		QString strPath = ReadIniString("UpDate", "Path", strUpdateConfig);
+		QString strExeName = ReadIniString("UpDate", "Name", strUpdateConfig);
+		QString strStartTime = ReadIniString("UpDate", "StartTime", strUpdateConfig);
+		QFileInfo fileInfo(strPath);
+
+		if (!strVersion.isEmpty()
+			&& strVersion == strRemoteVersion
+			&& fileInfo.exists()
+			)
+		{
+			log_info("%s  is downloaded, now install...", strExeName.toStdString().c_str());
+			ShellExecute(NULL, L"open", strPath.toStdWString().c_str(), NULL, NULL, SW_HIDE);
+			return;
+		}
+		else if (!strStartTime.isEmpty())
+		{
+			int nCurrrentID = 0;
+			int n = AlreadyRunning(ReadIniString("Update", "update", m_gRunConfig), nCurrrentID);
+			if (n > 0)
+			{
+				log_info("Update is AlreadyRunning");
+
+				int nTime = DateUtils::getCurrentDateTime();
+				int nTimeOld = strStartTime.toInt();
+				if (nTime - nTimeOld < 600)
+				{
+					log_info("Update is AlreadyRunning not more than 10 min");
+					return;
+				}
+				log_info("Update is AlreadyRunning more than 10 min, now kill Update");
+				QString cmd = "taskkill /im " + ReadIniString("Update", "update", m_gRunConfig) + " /f";
+				ShellExecute(NULL, cmd.toStdWString().c_str(), NULL, NULL, NULL, SW_SHOWNORMAL);
+			}
+
+		}
+		else
+		{
+			int nCurrrentID = 0;
+			int n = AlreadyRunning(ReadIniString("Update", "update", m_gRunConfig), nCurrrentID);
+			if (n > 0)
+			{
+				log_info("Update is AlreadyRunning and kill");
+				QString cmd = "taskkill /im " + ReadIniString("Update", "update", m_gRunConfig) + " /f";
+				ShellExecute(NULL, cmd.toStdWString().c_str(), NULL, NULL, NULL, SW_SHOWNORMAL);
+			}
+		}
+		QString strStart = GetRunDir() + ReadIniString("Update", "update", m_gRunConfig);
+		if (IsFileExist(strStart))
+		{
+			log_info("start Update %s ", strStart.toStdString().c_str());
+			QString lpParameters = strRemoteVersion + " " + clientUrl;
+			ShellExecute(NULL, L"open", strStart.toStdWString().c_str(), lpParameters.toStdWString().c_str(), NULL, SW_HIDE);
+		}
+		else
+		{
+			log_info("program lose update ");
+		}
+	
 }

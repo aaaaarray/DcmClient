@@ -113,7 +113,7 @@ bool HttpRequestModel::InitClient(QString orgId, QString orgName, QString dataDi
 	}
 	return false;
 }
-int HttpRequestModel::CheckClient(QString orgId, QString orgName, QString dataDir, QString clientId)
+int HttpRequestModel::CheckClient(QString orgId, QString orgName, QString dataDir, QString clientId, QString & clientUrl)
 {
 	QString mac;
 	getMacByGetAdaptersInfo(mac);
@@ -147,6 +147,7 @@ int HttpRequestModel::CheckClient(QString orgId, QString orgName, QString dataDi
 	{
 		QJsonObject root = parse_doucment.object();
 		if (root["code"].toString() == "0000"){
+			clientUrl = root["clientUrl"].toString();
 			return 0;
 		}
 		return 1;
