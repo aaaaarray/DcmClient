@@ -180,7 +180,7 @@ bool HttpRequestModel::updateSetting(QString orgId, QString orgName, QString dat
 	log_info("Success.");
 	return true;
 }
-bool HttpRequestModel::PackageLog(int nUserID, int nRoomID, bool bCoredump)
+bool HttpRequestModel::PackageLog()
 {
 	QString strMac = "";
 	if (!getMacByGetAdaptersInfo(strMac))
@@ -188,14 +188,12 @@ bool HttpRequestModel::PackageLog(int nUserID, int nRoomID, bool bCoredump)
 		log_error("Get MAC address failed.");
 		return false;
 	}
-	QString groupName = ReadIniString("Organization", "GroupName", m_gRunConfig);
+	QString	orgId = ReadIniString("client", "orgId", Ex_GetRoamingDir() + "config.ini");
+	QString clientId = ReadIniString("client", "orgName", Ex_GetRoamingDir() + "config.ini");
 	QString current_date = DateUtils::getDateTimeUTC8("yyyy-MM-dd-hh-mm-ss");
 	QString strFilePath = GetLogDir();
 	QString strZipName;
-	if (bCoredump)
-		strZipName = QString("coredump_%1_%2_%3_%4.zip").arg(nRoomID).arg(nUserID).arg(current_date).arg(strMac);
-	else
-		strZipName = QString("%1_%2_%3_%4.zip").arg(nRoomID).arg(nUserID).arg(current_date).arg(strMac);
+	strZipName = QString("%1_%2_%3_%4.zip").arg(current_date).arg(orgId).arg(clientId).arg(strMac);
 	QString strZipPath = strFilePath+ strZipName;
 	CZipEx zip;
 	zip.CreateZip(strZipPath.toStdWString().c_str(), NULL);
@@ -214,29 +212,7 @@ bool HttpRequestModel::PackageLog(int nUserID, int nRoomID, bool bCoredump)
 		{
 			continue;
 		}
-		if (bCoredump)
-		{
-			if (file.fileName() == "agora.log")
-			{
-				QString strAgoraCopy = GetLogDir() + "agora_copy.log";
-				QFile::copy(item.filePath(), strAgoraCopy);
-				QFileInfo fileinfo(strAgoraCopy);
-				zip.ZipAdd(fileinfo.fileName().toStdWString().c_str(), strAgoraCopy.toStdWString().c_str());
-				QFile::remove(strAgoraCopy);
-				log_info("file = %s", strAgoraCopy.toStdString().c_str());
-				continue;
-			}
-			else if (file.fileName() == "MiniDump.dmp")
-			{
-				QString strMiniDump = GetLogDir() + "MiniDump.dmp";
-				QFile::copy(item.filePath(), strMiniDump);
-				QFileInfo fileinfo(strMiniDump);
-				zip.ZipAdd(fileinfo.fileName().toStdWString().c_str(), strMiniDump.toStdWString().c_str());
-				QFile::remove(strMiniDump);
-				log_info("file = %s", strMiniDump.toStdString().c_str());
-				continue;
-			}
-		}
+		
 		QString descFile = item.filePath();
 		try {
 			zip.ZipAdd(strtmpName.toStdWString().c_str(), descFile.toStdWString().c_str());
@@ -255,7 +231,7 @@ bool HttpRequestModel::PackageLog(int nUserID, int nRoomID, bool bCoredump)
 	}
 	zip.CloseZipEx();
 	
-	if (sendRequest(nUserID, nRoomID, strZipPath))
+	if (sendRequest(strZipPath))
 		return true;
 	return false;
 }
@@ -321,31 +297,40 @@ bool HttpRequestModel::uploadFile(QString filePath)
 	}
 	return false;
 }
-bool HttpRequestModel::sendRequest(const int nUserID, const int nRoomID, const QString zipfile)
+bool HttpRequestModel::sendRequest(const QString zipfile)
 {
 	QFileInfo file = QFileInfo(zipfile);
 	std::map<QString,QString> params;
 	//params.insert(std::pair<QString, QString>("Version", m_strAPIVersion));
 	params.insert(std::pair<QString, QString>("UA", "Windows"));
-	//params.insert(std::pair<QString, QString>("Source", "windows_log"));
-	params.insert(std::pair<QString, QString>("UserID", QString::number(nUserID)));
-	params.insert(std::pair<QString, QString>("RoomID", QString::number(nRoomID)));
 	params.insert(std::pair<QString, QString>("FileName", file.fileName()));
 	params.insert(std::pair<QString, QString>("VerificationKey", getDateEncrpt()));
 
-	QString host = m_strHttpApi + "live/LogUpload";
-	QString strSlaveUrl = m_strHttpApi_Back + "live/LogUpload";
+	QString host = m_strHttpApi + "/file/log";
+	QString strSlaveUrl = m_strHttpApi_Back + "/file/log";
 	QString response_data;
 	if (postfile(host, params, zipfile, file.fileName(), response_data) != 0)
 	{
 		if (postfile(strSlaveUrl, params, zipfile, file.fileName(), response_data) != 0)
 			return false;
 	}
-	/*if (jr->Json_Parse_LogUpload(response_data))
+	QJsonParseError json_error;
+	QByteArray bytes = response_data.toUtf8();
+	QJsonDocument parse_doucment = QJsonDocument::fromJson(bytes, &json_error);
+	if (json_error.error != QJsonParseError::NoError)
 	{
-		QFile::remove(zipfile);
-		return true;
-	}*/
+		return false;
+	}
+	if (parse_doucment.isObject())
+	{
+		QJsonObject root = parse_doucment.object();
+		if (root["code"].toString() == "0000"){
+			if (QFile::remove(zipfile)){
+				log_info("delete %1 succ",zipfile.toStdString().c_str());
+			}
+			return true;
+		}
+	}
 	return false;
 }
 
@@ -564,21 +549,22 @@ int HttpRequestModel::postEx(const QString api, QString data, QString& response_
 
 int HttpRequestModel::postfile(const QString host, std::map<QString, QString> params, QString filepath, QString fileName, QString& response_data, QString strType)
 {
-log_info( "host = %s" , host.toStdString().c_str());
+	log_info( "host = %s" , host.toStdString().c_str());
 	QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
 	//multiPart->setBoundary("----WebKitFormBoundaryCJsAP52jsafp27FY");
 	std::map<QString, QString>::iterator it = params.begin();
-	log_info("上传参数 =    ");
+	log_info("上传参数 ");
 	for (it = params.begin(); it != params.end(); ++it)
 	{
 		QHttpPart childPart;
 		childPart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data;name=\"" + it->first + "\""));
-		childPart.setBody(it->second.toLatin1());
+		//childPart.setBody(it->second.toLatin1());
+		childPart.setBody(it->second.toLocal8Bit());
 		multiPart->append(childPart);
 		log_info("%s : %s", it->first.toStdString().c_str(), it->second.toStdString().c_str());
 	}
 	QHttpPart filePart;
-	filePart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data;name=\"file\";filename=\"" + fileName.toLatin1() + "\""));
+	filePart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data;name=\"file\";filename=\"" + fileName + "\""));//fileName.toLatin1()
 	QFile file(filepath);
 	if (!file.open(QIODevice::ReadOnly))
 		return -1;

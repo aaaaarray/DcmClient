@@ -15,6 +15,7 @@
 #include <qfileinfo.h>
 #include <qdesktopservices.h>
 #include "DateUtils.h"
+#include <qtextcodec.h> 
 
 bool CheckUpdate(int &bForcedUpgrade, QString &strRemoteVersion, QString &strFileUrl)
 {
@@ -62,46 +63,12 @@ bool CheckUpdate(int &bForcedUpgrade, QString &strRemoteVersion, QString &strFil
 	return bNew;
 
 }
-void setLog(){
-	QString g_szLogPath = GetLogDir();
-	QDir *temp = new QDir;
-	bool exist = temp->exists(g_szLogPath);
-	if (!exist)
-	{
-		bool ok = false;
-		ok = temp->mkpath(g_szLogPath);
-	}
-	QString szLogPathFiletmp = g_szLogPath + DateUtils::getDateUTC8("yyyy.MM.dd") + "_tmp.log";
 
-	QString szLogPathFile = g_szLogPath + DateUtils::getDateUTC8("yyyy.MM.dd") + ".log";
-	if (IsFileExist(szLogPathFiletmp) && !IsFileExist(szLogPathFile))
-	{
-		QFile file(szLogPathFiletmp);
-		file.rename(szLogPathFile);
-		QFile::remove(szLogPathFiletmp);
-	}
-	log_set_fp(szLogPathFile.toStdString().c_str());
-#ifdef QT_DEBUG
-	log_set_console(true);
-#else
-	log_set_console(false);
-#endif
-	log_set_level(LOG_TRACE);
-}
-#include <iostream>     // std::cout
-#include <cstdlib>      // std::exit
-#include <new>          // std::set_new_handler
 
-void no_memory() {
-	std::cout << "Failed to allocate memory!\n";
-	std::exit(1);
-
-}
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
 	a.setQuitOnLastWindowClosed(false);
-	std::set_new_handler(no_memory);
 	g_strResPath = GetRunDir() + "res/default/";//初始化资源路径
 	m_gRunConfig = GetRunDir() + "res/setting.ini";
 
@@ -117,6 +84,8 @@ int main(int argc, char *argv[])
 		//return false;
 	}
 	setLog();
+
+
 	int bForcedUpgrade = 0;
 	QString strRomteVersion;
 	QString strFileUrl;

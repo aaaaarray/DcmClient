@@ -167,38 +167,34 @@ const QString Ex_GetRoamingDir()
 }
 
 
-bool copyFileToPath(QString sourceDir, QString toDir, bool coverFileIfExist)
+bool copyFileToPath(QString source, QString target)
 {
-	toDir.replace("\\", "/");
-	if (sourceDir == toDir) {
+	target.replace("\\", "/");
+	if (source == target) {
 		return true;
 	}
-	if (!QFile::exists(sourceDir)) {
+	if (!QFile::exists(source)) {
 		return false;
 	}
+	QString dir = target.mid(0, target.lastIndexOf("/"));
 	QDir *createfile = new QDir;
-	bool exist = createfile->exists(toDir);
-	if (exist) {
-		if (coverFileIfExist) {
-			createfile->remove(toDir);
-		}
-	}
-	else
+	bool exist = createfile->exists(dir);
+	if (!exist) 
 	{
-		Ex_CreateDiretory(toDir);
+		Ex_CreateDiretory(dir);
 	}
 
-	if (!QFile::copy(sourceDir, toDir))
+	if (!QFile::copy(source, target))
 	{
 		return false;
 	}
 	return true;
 }
 
-bool moveFileToPath(QString sourceDir, QString toDir, bool coverFileIfExist)
+bool moveFileToPath(QString source, QString target)
 {
-	copyFileToPath(sourceDir, toDir);
-	QFile file(sourceDir);
+	copyFileToPath(source, target);
+	QFile file(source);
 	return file.remove();
 
 }

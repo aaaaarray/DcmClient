@@ -129,5 +129,33 @@ QString GetPicNameByLanguage(QString strName)
 
 	return strRet;
 }
+#include "IniEx.h"
+#include "DirFileEx.h"
+#include <QDir>
+#include "DateUtils.h"
+void setLog(){
+	QString g_szLogPath = GetLogDir();
+	QDir *temp = new QDir;
+	bool exist = temp->exists(g_szLogPath);
+	if (!exist)
+	{
+		bool ok = false;
+		ok = temp->mkpath(g_szLogPath);
+	}
+	QString szLogPathFiletmp = g_szLogPath + DateUtils::getDateUTC8("yyyy.MM.dd") + "_tmp.log";
 
-
+	QString szLogPathFile = g_szLogPath + DateUtils::getDateUTC8("yyyy.MM.dd") + ".log";
+	if (IsFileExist(szLogPathFiletmp) && !IsFileExist(szLogPathFile))
+	{
+		QFile file(szLogPathFiletmp);
+		file.rename(szLogPathFile);
+		QFile::remove(szLogPathFiletmp);
+	}
+	log_set_fp(szLogPathFile.toStdString().c_str());
+#ifdef QT_DEBUG
+	log_set_console(true);
+#else
+	log_set_console(false);
+#endif
+	log_set_level(LOG_TRACE);
+}
