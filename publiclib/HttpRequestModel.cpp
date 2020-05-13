@@ -298,6 +298,7 @@ bool HttpRequestModel::uploadFile(QString filePath)
 	}
 	return false;
 }
+
 bool HttpRequestModel::sendRequest(const QString zipfile)
 {
 	QFileInfo file = QFileInfo(zipfile);
@@ -326,8 +327,8 @@ bool HttpRequestModel::sendRequest(const QString zipfile)
 	{
 		QJsonObject root = parse_doucment.object();
 		if (root["code"].toString() == "0000"){
-			if (QFile::remove(zipfile)){
-				log_info("delete %1 succ",zipfile.toStdString().c_str());
+			if (QFile::remove(zipfile)){				
+				log_info("delete %s succ",zipfile.toStdString().c_str());
 			}
 			return true;
 		}

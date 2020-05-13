@@ -103,7 +103,13 @@ bool DeleteEmptyDir(const QString path)
 			DeleteEmptyDir(fi.absoluteFilePath());
 		}
 	}
-	return dir.rmpath(dir.absolutePath());
+	QString dataDir = ReadIniString("client", "dataDir", Ex_GetRoamingDir() + "config.ini");
+	if (dir.absolutePath() != dataDir)
+	{
+		return dir.rmdir(dir.absolutePath());
+	}
+	return true;
+	
 }
 
 //检查文件是否存在

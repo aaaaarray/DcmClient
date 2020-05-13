@@ -84,6 +84,7 @@ int main(int argc, char *argv[])
 		//return false;
 	}
 	setLog();
+	//DeleteEmptyDir("E:/dcm/data");
 	DcmClient *window = new DcmClient;
 	//window->show();
 	Q_UNUSED(window);

@@ -57,6 +57,7 @@ SettingWidget::SettingWidget(QWidget *parent)
 	labelBaseDir->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	labelBaseDir->setGeometry(20, 200, 100, 40);
 	lineeditBaseDir->setGeometry(130, 200, 210, 40);
+	lineeditBaseDir->setEnabled(false);
 	pushbuttonBaseDir->setText(LoadLanguageString("setting", "choseDir"));
 	pushbuttonBaseDir->setGeometry(350, 200, 80, 40);
 
