@@ -61,7 +61,11 @@ void UploadFileThread::run()
 	{
 		QString filePath = getFile();
 		
-		if (filePath == NULL){			
+		if (filePath == NULL){
+			QString dataDir = ReadIniString("client", "dataDir", Ex_GetRoamingDir() + "config.ini");
+			DeleteEmptyDir(dataDir);
+			Ex_CreateDiretory(dataDir);
+
 			QString szLogPathFile = GetLogDir() + DateUtils::getDateUTC8("yyyy.MM.dd") + "_tmp.log";
 			log_set_fp(szLogPathFile.toStdString().c_str());
 			if (!m_httpRequestModel->PackageLog()){

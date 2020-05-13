@@ -84,7 +84,6 @@ int main(int argc, char *argv[])
 		//return false;
 	}
 	setLog();
-dlgmain:
 	DcmClient *window = new DcmClient;
 	//window->show();
 	Q_UNUSED(window);

@@ -35,7 +35,7 @@ bool Ex_CreateDiretory(QString pszDir)
 	return false;
 }
 
-bool DeleteDir(const QString &dirName)
+bool DeleteDir(const QString dirName)
 {
 	QDir directory(dirName);
 	if (!directory.exists())
@@ -74,6 +74,36 @@ bool DeleteDir(const QString &dirName)
 		error = true;
 	}
 	return !error;
+}
+
+
+bool DeleteEmptyDir(const QString path)
+{
+	if (path.isEmpty())
+	{
+		return false;
+	}
+
+	QDir dir(path);
+	if (!dir.exists())
+	{
+		return true;
+	}
+
+	dir.setFilter(QDir::AllEntries | QDir::NoDotAndDotDot);
+	QFileInfoList fileList = dir.entryInfoList();
+	foreach(QFileInfo fi, fileList)
+	{
+		if (fi.isFile())
+		{
+			//fi.dir().remove(fi.fileName());
+		}
+		else
+		{
+			DeleteEmptyDir(fi.absoluteFilePath());
+		}
+	}
+	return dir.rmpath(dir.absolutePath());
 }
 
 //检查文件是否存在
@@ -183,8 +213,8 @@ bool copyFileToPath(QString source, QString target)
 	{
 		Ex_CreateDiretory(dir);
 	}
-
-	if (!QFile::copy(source, target))
+	QString name = source.mid(source.lastIndexOf("/")+1);
+	if (!QFile::copy(source, target + name))
 	{
 		return false;
 	}
